@@ -1,0 +1,14 @@
+2025/07/04-08:39:51.324 3fbc Recovering log #225
+2025/07/04-08:39:51.459 3fbc Delete type=0 #225
+2025/07/04-08:39:51.460 3fbc Delete type=3 #224
+2025/07/04-08:45:20.648 47e8 Level-0 table #229: started
+2025/07/04-08:45:20.762 47e8 Level-0 table #229: 652660 bytes OK
+2025/07/04-08:45:20.807 47e8 Delete type=0 #227
+2025/07/04-08:45:20.882 47e8 Manual compaction at level-0 from '!adventures!DP4RVmwqtkr1kke6' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!folders!PYQICmOOqTwL3iId' @ 15 : 1
+2025/07/04-08:45:20.882 47e8 Compacting 1@0 + 1@1 files
+2025/07/04-08:45:20.978 47e8 Generated table #230@0: 15 keys, 653430 bytes
+2025/07/04-08:45:20.978 47e8 Compacted 1@0 + 1@1 files => 653430 bytes
+2025/07/04-08:45:21.032 47e8 compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/07/04-08:45:21.033 47e8 Delete type=2 #67
+2025/07/04-08:45:21.033 47e8 Delete type=2 #229
+2025/07/04-08:45:21.033 47e8 Manual compaction at level-0 from '!folders!PYQICmOOqTwL3iId' @ 15 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
