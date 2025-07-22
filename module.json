@@ -1,0 +1,96 @@
+{
+  "id": "pf2e-ts-adv-v2",
+  "title": "PF2E-TS-ADV-V2",
+  "version": "1.2.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "description": "<p>Новый сборник приключение для Pathfinder 2 Editor remaster</p>",
+  "authors": [
+    {
+      "name": "Торговец Сказками",
+      "url": "https://boosty.to/tale_sale",
+      "flags": {}
+    }
+  ],
+  "scripts": [
+    "copyuuid.js",
+    "autoformat.js",
+    "read.js",
+    "journals/AoA/AoA.js",
+    "journals/PFS1/PFS1.js"
+  ],
+  "styles": [
+    "styles.css",
+    "journals/AoA/AoA.css",
+    "journals/PFS1/PFS1.css"
+  ],
+  "packs": [
+    {
+      "name": "Adventure",
+      "label": "Приключения",
+      "path": "packs/Adventure",
+      "type": "Adventure",
+      "system": "pf2e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "Scene",
+      "label": "Сцены",
+      "path": "packs/Scene",
+      "type": "Scene",
+      "system": "pf2e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "Actor",
+      "label": "Актёры",
+      "path": "packs/Actor",
+      "type": "Actor",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "pf2e"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "99.PF2E-TS-ADV-V2",
+      "sorting": "m",
+      "packs": [
+        "Adventure",
+        "Scene",
+        "Actor"
+      ],
+      "color": null,
+      "folders": []
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf2e",
+        "type": "system",
+        "compatibility": {}
+      }
+    ],
+    "recommends": [
+      {
+        "id": "pf2e-token-pack",
+        "type": "module",
+        "compatibility": {}
+      }
+    ]
+  },
+  "url": "https://github.com/TaleSale/pf2e-ts-adv-v2",
+  "manifest": "https://raw.githubusercontent.com/TaleSale/pf2e-ts-adv-v2/main/module.json",
+  "download": "https://github.com/TaleSale/pf2e-ts-adv-v2/archive/refs/heads/main.zip"
+}

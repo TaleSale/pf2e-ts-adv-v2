@@ -1,0 +1,133 @@
+
+@font-face {
+	font-family: "Manuskript";
+	src: url("./fonts/Manuskript.woff2") format("woff2");
+}
+
+
+@font-face {
+	font-family: "Marck Script";
+	src: url("./fonts/MarckScript.woff2") format("woff2");
+}
+
+/*ЖУРНАЛЫ*/
+.А
+{
+  text-indent: 10px;
+  text-align: justify;
+  text-align-last: left;
+  margin: 8px;
+}
+
+.Б {
+  font-family: Georgia;
+}
+
+.БлокСтат
+{
+  border-radius: 10px;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px; /*Общее*/
+  /*Стат*/
+  border: 3px solid black;
+  background: #f8f8eb;
+  clear: both;
+}
+
+/********** картинка слева **********/
+.ЛЕВ {
+  float: left;
+  margin: 0 0 1em 0em;
+  width: 20%;
+  margin-top: 2px; /* Вертикальный отступ от предыдущего объекта */
+  margin-left: 2px
+}
+
+.ЛЕВ img {
+  height: auto !important;
+  border: none; /* Убираем рамку у изображения */
+}
+
+.ЛЕВ figcaption {
+  white-space: nowrap; /* Запрет переноса текста на следующую строку */
+  text-overflow: ellipsis; /* Отображение многоточия, если текст не помещается */
+  font-size: 10px;
+  padding: 5px;
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+}
+
+/********** картинка справа **********/
+.ПРАВ {
+  float: right;
+  margin: 0 0 1em 0em;
+  width: 20%;
+  margin-top: 2px; /* Вертикальный отступ от предыдущего объекта */
+  margin-left: 2px;
+  position: relative; /* Относительное позиционирование необходимо для работы z-index */
+  z-index: 10;
+}
+
+.ПРАВ img {
+  height: auto !important;
+  border: none; /* Убираем рамку у изображения */
+}
+
+.ПРАВ figcaption {
+  white-space: nowrap; /* Запрет переноса текста на следующую строку */
+  text-overflow: ellipsis; /* Отображение многоточия, если текст не помещается */
+  font-size: 10px;
+  padding: 5px;
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+}
+
+/********** картинка центр **********/
+
+.ЦЕНТР {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.ЦЕНТР img {
+  border: 5px solid lightblue; /* Более светлый оттенок синего для рамки */
+  border-radius: 10px; /* Закругление углов картинки */
+  height: auto !important;
+}
+
+.read {
+  cursor:pointer;
+  position:relative;
+  width:auto;
+  z-index:1
+}
+.read:after {
+  background-color:#ffffff;
+  border-left:2px solid #470000;
+  border-radius:5px;
+  border-right:2px solid #470000;
+  color:#ff2424;
+  content:"";
+  display:block;
+  font-family:Font Awesome\ 6 Pro;
+  font-size:10px;
+  font-weight:900;
+  height:16px;
+  line-height:16px;
+  position:absolute;
+  right:-8px;
+  text-align:center;
+  top:-8px;
+  transition:background 1s ease-in-out;
+  transition:background-color 1s ease-in-out;
+  width:16px;
+  text-indent: 2px;
+}
+

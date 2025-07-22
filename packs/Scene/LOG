@@ -1,0 +1,8 @@
+2025/07/22-08:38:54.381 30fc Recovering log #341
+2025/07/22-08:38:54.650 30fc Delete type=0 #341
+2025/07/22-08:38:54.650 30fc Delete type=3 #339
+2025/07/22-09:47:26.274 444c Level-0 table #346: started
+2025/07/22-09:47:26.274 444c Level-0 table #346: 0 bytes OK
+2025/07/22-09:47:26.291 444c Delete type=0 #344
+2025/07/22-09:47:26.366 444c Manual compaction at level-0 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
+2025/07/22-09:47:26.715 444c Manual compaction at level-1 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
