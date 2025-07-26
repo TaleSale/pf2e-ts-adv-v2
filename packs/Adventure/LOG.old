@@ -1,15 +1,24 @@
-2025/07/22-08:38:54.213 3660 Recovering log #326
-2025/07/22-08:38:54.263 3660 Delete type=0 #326
-2025/07/22-08:38:54.263 3660 Delete type=3 #324
-2025/07/22-09:47:25.474 444c Level-0 table #331: started
-2025/07/22-09:47:25.755 444c Level-0 table #331: 2232505 bytes OK
-2025/07/22-09:47:25.791 444c Delete type=0 #329
-2025/07/22-09:47:25.841 444c Manual compaction at level-0 from '!adventures!DP4RVmwqtkr1kke6' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!oiRwm7LF5pqmII2L' @ 27 : 1
-2025/07/22-09:47:25.841 444c Compacting 1@0 + 1@1 files
-2025/07/22-09:47:26.080 444c Generated table #332@0: 3 keys, 2239333 bytes
-2025/07/22-09:47:26.122 444c Generated table #333@0: 14 keys, 1828 bytes
-2025/07/22-09:47:26.122 444c Compacted 1@0 + 1@1 files => 2241161 bytes
-2025/07/22-09:47:26.141 444c compacted to: files[ 0 2 0 0 0 0 0 ]
-2025/07/22-09:47:26.141 444c Delete type=2 #285
-2025/07/22-09:47:26.141 444c Delete type=2 #331
-2025/07/22-09:47:26.174 444c Manual compaction at level-0 from '!adventures!oiRwm7LF5pqmII2L' @ 27 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
+2025/07/26-10:04:06.404 322c Recovering log #389
+2025/07/26-10:04:06.508 322c Delete type=0 #389
+2025/07/26-10:04:06.508 322c Delete type=3 #387
+2025/07/26-11:45:01.670 ea4 Level-0 table #394: started
+2025/07/26-11:45:01.993 ea4 Level-0 table #394: 2233466 bytes OK
+2025/07/26-11:45:02.028 ea4 Delete type=0 #392
+2025/07/26-11:47:25.112 ea4 Compacting 1@0 + 1@1 files
+2025/07/26-11:47:25.346 ea4 Generated table #395@0: 3 keys, 2242125 bytes
+2025/07/26-11:47:25.346 ea4 Compacted 1@0 + 1@1 files => 2242125 bytes
+2025/07/26-11:47:25.366 ea4 compacted to: files[ 0 2 0 0 0 0 0 ]
+2025/07/26-11:47:25.366 ea4 Delete type=2 #338
+2025/07/26-11:47:25.367 ea4 Delete type=2 #394
+2025/07/26-11:48:13.389 ea4 Level-0 table #397: started
+2025/07/26-11:48:13.639 ea4 Level-0 table #397: 2811032 bytes OK
+2025/07/26-11:48:13.771 ea4 Delete type=0 #393
+2025/07/26-11:48:13.772 ea4 Manual compaction at level-0 from '!adventures!DP4RVmwqtkr1kke6' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!lPiuSMvsPLoh8Dxw' @ 36 : 1
+2025/07/26-11:48:13.772 ea4 Compacting 1@0 + 1@1 files
+2025/07/26-11:48:14.195 ea4 Generated table #398@0: 3 keys, 2567144 bytes
+2025/07/26-11:48:14.322 ea4 Generated table #399@0: 1 keys, 1080328 bytes
+2025/07/26-11:48:14.322 ea4 Compacted 1@0 + 1@1 files => 3647472 bytes
+2025/07/26-11:48:14.384 ea4 compacted to: files[ 0 3 0 0 0 0 0 ]
+2025/07/26-11:48:14.385 ea4 Delete type=2 #395
+2025/07/26-11:48:14.385 ea4 Delete type=2 #397
+2025/07/26-11:48:14.386 ea4 Manual compaction at level-0 from '!adventures!lPiuSMvsPLoh8Dxw' @ 36 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
