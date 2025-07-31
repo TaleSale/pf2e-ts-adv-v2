@@ -1,0 +1,180 @@
+.PF1EHR h1 {
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 10px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+  color: rgb(254, 254, 254);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.PF1EHR h1::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/PF1EHR/back2.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.PF1EHR article header.journal-page-header h2 {
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 10px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+  color: rgb(254, 254, 254);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.PF1EHR article header.journal-page-header h2::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/PF1EHR/back2.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.PF1EHR article header.journal-page-header h3 {
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 10px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+  color: rgb(254, 254, 254);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.PF1EHR article header.journal-page-header h3::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/PF1EHR/back2.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.PF1EHR h2
+{
+  color: rgb(25, 67, 89);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+.PF1EHR h3
+{
+  color: rgb(49, 75, 97);
+  font-family: Marck Script;
+  font-weight: bold;
+}
+
+.PF1EHR h4
+{
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+.PF1EHR h5
+{
+  font-family: Manuskript;
+}
+
+.PF1EHR blockquote {
+  all: unset;
+}
+
+.PF1EHR blockquote {
+  color: rgb(32, 72, 94); /* цвет текста */
+  font-size: inherit; /* Использовать прошлый шрифт */
+  line-height: 1.2; /* Высота строки */
+  text-align: justify; /* Выровнять текст по ширине */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 20px 0; /* Отступы сверху и снизу для псевдоэлементов */
+  background: #f8f8eb;
+}
+
+.PF1EHR blockquote::before,
+.PF1EHR blockquote::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: rgb(32, 72, 94);
+  width: 100%; /* Полная ширина блока */
+  position: absolute;
+  left: 0;
+}
+
+.PF1EHR blockquote::before {
+  top: -5px; /* Полоса сверху с отступом наверх от текста */
+}
+
+.PF1EHR blockquote::after {
+  bottom: -5px; /* Полоса снизу с отступом вниз от текста */
+}
+
+.PF1EHR section.insite {
+  font-size: inherit; /* Использовать прошлый шрифт */
+  line-height: 1.2; /* Высота строки */
+  text-align: justify; /* Выровнять текст по ширине */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 20px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.PF1EHR section.insite::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/PF1EHR/back3.webp') no-repeat center center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.insite h2
+{
+  color: black !important;
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+.PF1EHR table tbody tr td
+{
+  text-align: justify;
+  text-align-last: left;
+}
+
+.PF1EHR p
+{
+  text-indent: 10px;
+  text-align: justify;
+  text-align-last: left;
+  margin: 8px;
+}

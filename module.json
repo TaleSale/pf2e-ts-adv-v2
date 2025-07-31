@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -19,7 +19,8 @@
     "autoformat.js",
     "read.js",
     "journals/AoA/AoA.js",
-    "journals/PFS1/PFS1.js"
+    "journals/PFS1/PFS1.js",
+    "journals/PF1EHR/PF1EHR.js"
   ],
   "styles": [
     {
@@ -30,6 +31,9 @@
     },
     {
       "src": "journals/PFS1/PFS1.css"
+    },
+    {
+      "src": "journals/PF1EHR/PF1EHR.css"
     }
   ],
   "packs": [

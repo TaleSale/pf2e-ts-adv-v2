@@ -71,6 +71,7 @@ class TSButton {
         { pattern: /Знан[а-я]*: Воен[а-я]* Дел[а-я]*_КС(\d+)/gi, replacement: '@Check[type:warfare-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Динозавр[а-я]*_КС(\d+)/gi, replacement: '@Check[type:dinosaur-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Обществ[а-я]*_Искател[а-я]*_КС(\d+)/gi, replacement: '@Check[type:pathfinder-society-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Кинтарг[а-я]*_КС(\d+)/gi, replacement: '@Check[type:kintargo-lore|dc:$1]' },
         { pattern: /КС_(\d+)/gi, replacement: 'КС$1' },
 
 
