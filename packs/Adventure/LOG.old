@@ -1,3 +1,32 @@
-2025/07/31-19:19:17.459 130c Recovering log #483
-2025/07/31-19:19:17.515 130c Delete type=0 #483
-2025/07/31-19:19:17.516 130c Delete type=3 #482
+2025/08/03-15:29:34.101 12d0 Recovering log #522
+2025/08/03-15:29:34.131 12d0 Delete type=0 #522
+2025/08/03-15:29:34.131 12d0 Delete type=3 #521
+2025/08/03-16:39:52.229 4254 Level-0 table #526: started
+2025/08/03-16:39:52.322 4254 Level-0 table #526: 2262328 bytes OK
+2025/08/03-16:39:52.354 4254 Delete type=0 #524
+2025/08/03-16:40:43.308 4254 Level-0 table #528: started
+2025/08/03-16:40:43.469 4254 Level-0 table #528: 1130744 bytes OK
+2025/08/03-16:40:43.525 4254 Delete type=0 #525
+2025/08/03-16:40:43.525 4254 Manual compaction at level-0 from '!adventures!D6No4vCL9bCHoegA' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
+2025/08/03-16:40:43.526 4254 Manual compaction at level-1 from '!adventures!D6No4vCL9bCHoegA' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!jlLRs7839jUnuWx4' @ 44 : 1
+2025/08/03-16:40:43.533 4254 Compacting 2@1 + 1@2 files
+2025/08/03-16:40:43.726 4254 Generated table #529@1: 2 keys, 2283883 bytes
+2025/08/03-16:40:44.001 4254 Generated table #530@1: 2 keys, 959477 bytes
+2025/08/03-16:40:44.001 4254 Compacted 2@1 + 1@2 files => 3243360 bytes
+2025/08/03-16:40:44.054 4254 compacted to: files[ 0 2 2 0 0 0 0 ]
+2025/08/03-16:40:44.055 4254 Delete type=2 #492
+2025/08/03-16:40:44.056 4254 Delete type=2 #526
+2025/08/03-16:40:44.057 4254 Delete type=2 #528
+2025/08/03-16:40:44.059 4254 Manual compaction at level-1 from '!adventures!jlLRs7839jUnuWx4' @ 44 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!oiRwm7LF5pqmII2L' @ 35 : 1
+2025/08/03-16:40:44.059 4254 Compacting 1@1 + 0@2 files
+2025/08/03-16:40:44.368 4254 Generated table #531@1: 2 keys, 2485572 bytes
+2025/08/03-16:40:44.368 4254 Compacted 1@1 + 0@2 files => 2485572 bytes
+2025/08/03-16:40:44.400 4254 compacted to: files[ 0 1 3 0 0 0 0 ]
+2025/08/03-16:40:44.400 4254 Delete type=2 #493
+2025/08/03-16:40:44.401 4254 Manual compaction at level-1 from '!adventures!oiRwm7LF5pqmII2L' @ 35 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!folders!l0fhXxeFvERBAXLI' @ 14 : 1
+2025/08/03-16:40:44.401 4254 Compacting 1@1 + 0@2 files
+2025/08/03-16:40:44.466 4254 Generated table #532@1: 15 keys, 1953 bytes
+2025/08/03-16:40:44.466 4254 Compacted 1@1 + 0@2 files => 1953 bytes
+2025/08/03-16:40:44.542 4254 compacted to: files[ 0 0 4 0 0 0 0 ]
+2025/08/03-16:40:44.542 4254 Delete type=2 #494
+2025/08/03-16:40:44.542 4254 Manual compaction at level-1 from '!folders!l0fhXxeFvERBAXLI' @ 14 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)

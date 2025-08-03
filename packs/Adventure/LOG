@@ -1,22 +1,15 @@
-2025/07/31-19:25:22.515 1d88 Recovering log #485
-2025/07/31-19:25:22.603 1d88 Delete type=0 #485
-2025/07/31-19:25:22.603 1d88 Delete type=3 #484
-2025/08/01-00:41:35.305 158c Level-0 table #489: started
-2025/08/01-00:41:35.385 158c Level-0 table #489: 1901218 bytes OK
-2025/08/01-00:41:35.406 158c Delete type=0 #487
-2025/08/01-00:44:58.907 158c Level-0 table #491: started
-2025/08/01-00:44:59.141 158c Level-0 table #491: 1901119 bytes OK
-2025/08/01-00:44:59.206 158c Delete type=0 #488
-2025/08/01-00:44:59.207 158c Manual compaction at level-0 from '!adventures!DP4RVmwqtkr1kke6' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!folders!knVqVeBaAuuL9Anm' @ 40 : 1
-2025/08/01-00:44:59.207 158c Compacting 2@0 + 3@1 files
-2025/08/01-00:44:59.687 158c Generated table #492@0: 3 keys, 2112597 bytes
-2025/08/01-00:44:59.875 158c Generated table #493@0: 2 keys, 2485572 bytes
-2025/08/01-00:44:59.946 158c Generated table #494@0: 15 keys, 1953 bytes
-2025/08/01-00:44:59.946 158c Compacted 2@0 + 3@1 files => 4600122 bytes
-2025/08/01-00:44:59.997 158c compacted to: files[ 0 3 0 0 0 0 0 ]
-2025/08/01-00:44:59.997 158c Delete type=2 #333
-2025/08/01-00:44:59.998 158c Delete type=2 #398
-2025/08/01-00:44:59.998 158c Delete type=2 #399
-2025/08/01-00:44:59.999 158c Delete type=2 #489
-2025/08/01-00:45:00.000 158c Delete type=2 #491
-2025/08/01-00:45:00.000 158c Manual compaction at level-0 from '!folders!knVqVeBaAuuL9Anm' @ 40 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
+2025/08/03-16:45:52.403 2de8 Recovering log #527
+2025/08/03-16:45:52.460 2de8 Delete type=0 #527
+2025/08/03-16:45:52.460 2de8 Delete type=3 #523
+2025/08/03-16:49:52.099 87c Level-0 table #536: started
+2025/08/03-16:49:52.167 87c Level-0 table #536: 1130580 bytes OK
+2025/08/03-16:49:52.190 87c Delete type=0 #534
+2025/08/03-16:49:52.240 87c Manual compaction at level-0 from '!adventures!D6No4vCL9bCHoegA' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
+2025/08/03-16:49:52.241 87c Manual compaction at level-1 from '!adventures!D6No4vCL9bCHoegA' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!D6No4vCL9bCHoegA' @ 50 : 1
+2025/08/03-16:49:52.241 87c Compacting 1@1 + 1@2 files
+2025/08/03-16:49:52.393 87c Generated table #537@1: 2 keys, 2283719 bytes
+2025/08/03-16:49:52.394 87c Compacted 1@1 + 1@2 files => 2283719 bytes
+2025/08/03-16:49:52.438 87c compacted to: files[ 0 0 4 0 0 0 0 ]
+2025/08/03-16:49:52.438 87c Delete type=2 #529
+2025/08/03-16:49:52.439 87c Delete type=2 #536
+2025/08/03-16:49:52.499 87c Manual compaction at level-1 from '!adventures!D6No4vCL9bCHoegA' @ 50 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
