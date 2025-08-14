@@ -1,0 +1,276 @@
+/* CC.css */
+
+.journal-sheet.CC .journal-sidebar {
+  /* ИЗМЕНЕНИЕ ЗДЕСЬ: Используем абсолютный путь от корня Foundry */
+  background: url('/modules/pf2e-ts-adv-v2/journals/CC/back.webp') no-repeat center center !important;
+  background-size: cover !important;
+  width: 300px !important;
+}
+
+.journal-sheet.CC .journal-entry-content {
+  background-color: #f0f0f0 !important;
+}
+
+/* Удаляем стандартный заголовок журнала в нашей теме */
+.journal-sheet.CC .journal-header {
+    display: none;
+}
+
+/* Красим весь текст в сайдбаре в черный цвет */
+.journal-sheet.CC .journal-sidebar .page-title,
+.journal-sheet.CC .journal-sidebar .page-number,
+.journal-sheet.CC .journal-sidebar .heading-link {
+  color: black !important;
+}
+
+/* --- НАЧАЛО: Стили для выделения активной страницы и ее подзаголовков --- */
+
+/* Применяем стиль к самому элементу li.directory-item.active,
+   который является общим контейнером для заголовка страницы и ее внутренних заголовков. */
+.journal-sheet.CC .journal-sidebar .directory-item.active {
+  
+  /* Добавляем полупрозрачный темный фон, чтобы выделить всю группу */
+  background-color: rgba(0, 0, 0, 0.15);
+
+  /* Создаем общую красную рамку толщиной 2px с помощью тени.
+     Теперь она окружает весь блок целиком. */
+  box-shadow: inset 0 0 0 2px red;
+
+  /* Скругляем углы рамки для более мягкого вида */
+  border-radius: 5px;
+  
+  /* Добавляем небольшой внутренний отступ, чтобы рамка не прилипала к тексту. */
+  padding: 1px;
+
+  /* Добавляем небольшой внешний отступ, чтобы блок не сливался с соседями */
+  margin: 2px 0;
+}
+
+/* --- КОНЕЦ: Стили для выделения активной страницы и ее подзаголовков --- */
+
+/* --- НАЧАЛО: ФИНАЛЬНАЯ, АГРЕССИВНАЯ ПОПЫТКА УБРАТЬ РАМКУ У ИЗОБРАЖЕНИЙ --- */
+
+/*
+ * Шаг 1: Полностью уничтожаем любые стили рамки у основного контейнера страницы.
+ * Мы нацеливаемся на все возможные свойства, включая `border-image`.
+*/
+.journal-sheet.CC .journal-entry-content .journal-entry-page.image {
+    /* Уничтожаем все виды рамок */
+    border-style: none !important;
+    border-width: 0 !important;
+    border-image: none !important; /* <-- ВОЗМОЖНО, ЭТО КЛЮЧЕВОЙ ЭЛЕМЕНТ! */
+    outline: none !important;
+
+    /* Сбрасываем фон и тени */
+    background: transparent !important;
+    box-shadow: none !important;
+    
+    /* Сбрасываем внутренние отступы */
+    padding: 0 !important;
+}
+
+/*
+ * Шаг 2: Убеждаемся, что контейнер <figure> и само изображение <img>
+ * также не имеют никаких отступов или рамок.
+*/
+.journal-sheet.CC .journal-entry-page.image figure,
+.journal-sheet.CC .journal-entry-page.image img {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important; /* Убираем скругление углов */
+}
+
+/*
+ * Шаг 3: Растягиваем изображение на всю доступную ширину, чтобы
+ * оно заполнило контейнер и не оставило полей.
+*/
+.journal-sheet.CC .journal-entry-page.image img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* --- КОНЕЦ: ФИНАЛЬНАЯ ПОПЫТКА --- */
+
+.CC h1 {
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 10px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+  color: rgb(153, 20, 26);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.CC h1::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/CC/back2.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.CC article header.journal-page-header h2 {
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 10px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+  color: rgb(153, 20, 26);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.CC article header.journal-page-header h2::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/CC/back2.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.CC article header.journal-page-header h3 {
+  text-align: center; /* Выравнивание текста по центру горизонтально */
+  align-items: center; /* Выравнивание текста по центру вертикально */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 10px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+  color: rgb(153, 20, 26);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.CC article header.journal-page-header h3::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/CC/back2.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.CC h2
+{
+  color: rgb(163, 20, 26);
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+.CC h3
+{
+  color: rgb(88, 88, 90);
+  font-family: Marck Script;
+  font-weight: bold;
+}
+
+.CC h4
+{
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+.CC h5
+{
+  font-family: Manuskript;
+}
+
+.CC blockquote {
+  all: unset;
+}
+
+.CC blockquote {
+  color: rgb(193, 20, 26); /* цвет текста */
+  font-size: inherit; /* Использовать прошлый шрифт */
+  line-height: 1.2; /* Высота строки */
+  text-align: justify; /* Выровнять текст по ширине */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 20px 0; /* Отступы сверху и снизу для псевдоэлементов */
+  background: #f8f8eb;
+}
+
+.CC blockquote::before,
+.CC blockquote::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: rgb(193, 20, 26);
+  width: 100%; /* Полная ширина блока */
+  position: absolute;
+  left: 0;
+}
+
+.CC blockquote::before {
+  top: -5px; /* Полоса сверху с отступом наверх от текста */
+}
+
+.CC blockquote::after {
+  bottom: -5px; /* Полоса снизу с отступом вниз от текста */
+}
+
+.CC section.insite {
+  font-size: inherit; /* Использовать прошлый шрифт */
+  line-height: 1.2; /* Высота строки */
+  text-align: justify; /* Выровнять текст по ширине */
+  position: relative; /* Для позиционирования псевдоэлементов */
+  padding: 20px; /* Отступы для текста */
+  z-index: 1; /* Поверх фона с прозрачностью */
+}
+
+/* Прозрачный фон через псевдоэлемент */
+.CC section.insite::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/modules/pf2e-ts-adv-v2/journals/CC/back3.webp') no-repeat center center; /* Абсолютный путь к изображению фона */
+    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    background-attachment: fixed; /* Фиксированный фон, если нужно */    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
+    opacity: 1; /* Прозрачность 10% */
+    z-index: -1; /* За текстом */
+}
+
+.insite h2
+{
+  color: black !important;
+  font-family: Manuskript;
+  font-weight: bold;
+}
+
+.CC table tbody tr td
+{
+  text-align: justify;
+  text-align-last: left;
+}
+
+.CC p
+{
+  text-indent: 10px;
+  text-align: justify;
+  text-align-last: left;
+  margin: 8px;
+}

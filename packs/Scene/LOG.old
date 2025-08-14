@@ -1,8 +1,3 @@
-2025/08/10-14:15:59.317 4824 Recovering log #602
-2025/08/10-14:15:59.366 4824 Delete type=0 #602
-2025/08/10-14:15:59.366 4824 Delete type=3 #600
-2025/08/10-17:07:11.767 c80 Level-0 table #607: started
-2025/08/10-17:07:11.767 c80 Level-0 table #607: 0 bytes OK
-2025/08/10-17:07:11.792 c80 Delete type=0 #605
-2025/08/10-17:07:11.850 c80 Manual compaction at level-0 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
-2025/08/10-17:07:11.851 c80 Manual compaction at level-1 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
+2025/08/13-10:36:58.210 c84 Recovering log #632
+2025/08/13-10:36:58.274 c84 Delete type=0 #632
+2025/08/13-10:36:58.275 c84 Delete type=3 #630
