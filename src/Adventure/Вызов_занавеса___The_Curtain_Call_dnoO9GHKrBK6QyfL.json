@@ -1,0 +1,21 @@
+{
+  "type": "Adventure",
+  "folder": "PYQICmOOqTwL3iId",
+  "name": "Вызов занавеса / The Curtain Call",
+  "color": null,
+  "sorting": "a",
+  "_id": "dnoO9GHKrBK6QyfL",
+  "description": "",
+  "sort": 0,
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null,
+    "coreVersion": "13.347",
+    "systemId": "pf2e",
+    "systemVersion": "7.3.1",
+    "lastModifiedBy": null
+  },
+  "_key": "!folders!dnoO9GHKrBK6QyfL"
+}
