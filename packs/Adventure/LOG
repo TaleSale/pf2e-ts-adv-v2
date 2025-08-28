@@ -1,25 +1,8 @@
-2025/08/23-14:05:38.786 3790 Recovering log #780
-2025/08/23-14:05:38.866 3790 Delete type=0 #780
-2025/08/23-14:05:38.866 3790 Delete type=3 #778
-2025/08/23-14:44:09.197 3c40 Level-0 table #785: started
-2025/08/23-14:44:09.269 3c40 Level-0 table #785: 1936947 bytes OK
-2025/08/23-14:44:09.304 3c40 Delete type=0 #783
-2025/08/23-14:44:33.686 3c40 Level-0 table #787: started
-2025/08/23-14:44:33.926 3c40 Level-0 table #787: 969389 bytes OK
-2025/08/23-14:44:33.952 3c40 Delete type=0 #784
-2025/08/23-14:44:33.953 3c40 Manual compaction at level-0 from '!adventures!D6No4vCL9bCHoegA' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!tJyXZtY3WWkFGB5e' @ 33 : 1
-2025/08/23-14:44:33.953 3c40 Compacting 1@0 + 1@1 files
-2025/08/23-14:44:34.182 3c40 Generated table #788@0: 1 keys, 969389 bytes
-2025/08/23-14:44:34.182 3c40 Compacted 1@0 + 1@1 files => 969389 bytes
-2025/08/23-14:44:34.227 3c40 compacted to: files[ 0 1 4 0 0 0 0 ]
-2025/08/23-14:44:34.228 3c40 Delete type=2 #785
-2025/08/23-14:44:34.228 3c40 Delete type=2 #787
-2025/08/23-14:44:34.228 3c40 Manual compaction at level-0 from '!adventures!tJyXZtY3WWkFGB5e' @ 33 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
-2025/08/23-14:44:34.228 3c40 Manual compaction at level-1 from '!adventures!D6No4vCL9bCHoegA' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at '!adventures!tJyXZtY3WWkFGB5e' @ 33 : 1
-2025/08/23-14:44:34.228 3c40 Compacting 1@1 + 1@2 files
-2025/08/23-14:44:34.447 3c40 Generated table #789@1: 19 keys, 2051951 bytes
-2025/08/23-14:44:34.447 3c40 Compacted 1@1 + 1@2 files => 2051951 bytes
-2025/08/23-14:44:34.469 3c40 compacted to: files[ 0 0 4 0 0 0 0 ]
-2025/08/23-14:44:34.469 3c40 Delete type=2 #763
-2025/08/23-14:44:34.470 3c40 Delete type=2 #788
-2025/08/23-14:44:34.470 3c40 Manual compaction at level-1 from '!adventures!tJyXZtY3WWkFGB5e' @ 33 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
+2025/08/28-09:00:02.248 4ac8 Recovering log #866
+2025/08/28-09:00:02.297 4ac8 Delete type=0 #866
+2025/08/28-09:00:02.297 4ac8 Delete type=3 #864
+2025/08/28-13:14:34.506 12bc Level-0 table #871: started
+2025/08/28-13:14:34.866 12bc Level-0 table #871: 753345 bytes OK
+2025/08/28-13:14:34.906 12bc Delete type=0 #869
+2025/08/28-13:14:35.122 12bc Manual compaction at level-0 from '!adventures!51sPcqxLWVjh7jXS' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)
+2025/08/28-13:14:35.123 12bc Manual compaction at level-1 from '!adventures!51sPcqxLWVjh7jXS' @ 72057594037927935 : 1 .. '!folders!l0fhXxeFvERBAXLI' @ 0 : 0; will stop at (end)

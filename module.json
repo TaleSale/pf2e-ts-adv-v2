@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -23,7 +23,9 @@
     "journals/PF1EHR/PF1EHR.js",
     "journals/CC/CC.js",
     "journals/fallofplaguestone/fallofplaguestone.js",
-    "journals/Rusthenge/Rusthenge.js"
+    "journals/Rusthenge/Rusthenge.js",
+    "journals/slithering/slithering.js",
+    "journals/enmitycycle/enmitycycle.js"
   ],
   "styles": [
     {
@@ -46,6 +48,12 @@
     },
     {
       "src": "journals/Rusthenge/Rusthenge.css"
+    },
+    {
+      "src": "journals/slithering/slithering.css"
+    },
+    {
+      "src": "journals/enmitycycle/enmitycycle.css"
     }
   ],
   "packs": [

@@ -24,7 +24,7 @@ class RusthengeJournalSheet extends JournalSheet {
     const contentElement = html.find('.journal-entry-content')[0];
 
     if (navigationElement) {
-      navigationElement.style.background = "url('modules/pf2e-ts-adv/journals/Rusthenge/back.webp') no-repeat center center";
+      navigationElement.style.background = "url('modules/pf2e-ts-adv-v2/journals/Rusthenge/back.webp') no-repeat center center";
       navigationElement.style.backgroundSize = "cover";
       navigationElement.style.width = '300px';  // установим ширину навигационной части
     }
@@ -41,7 +41,7 @@ class RusthengeJournalSheet extends JournalSheet {
 
     // Загружаем слова для выделения из JSON-файла
     try {
-      const response = await fetch('modules/pf2e-ts-adv/journals/Rusthenge/!!!keywords.json');
+      const response = await fetch('modules/pf2e-ts-adv-v2/journals/Rusthenge/!!!keywords.json');
       const keywords = await response.json();
       this.setupMutationObserver(contentElement, keywords);
     } catch (error) {

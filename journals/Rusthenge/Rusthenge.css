@@ -17,7 +17,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('/modules/pf2e-ts-adv/journals/Rusthenge/back3.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background: url('/modules/pf2e-ts-adv-v2/journals/Rusthenge/back3.webp') no-repeat center; /* Абсолютный путь к изображению фона */
     background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
     background-attachment: fixed; /* Фиксированный фон, если нужно */
     opacity: 0.4; /* Прозрачность 10% */
@@ -43,7 +43,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('/modules/pf2e-ts-adv/journals/Rusthenge/back3.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background: url('/modules/pf2e-ts-adv-v2/journals/Rusthenge/back3.webp') no-repeat center; /* Абсолютный путь к изображению фона */
     background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
     background-attachment: fixed; /* Фиксированный фон, если нужно */
     opacity: 0.4; /* Прозрачность 10% */
@@ -69,7 +69,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('/modules/pf2e-ts-adv/journals/Rusthenge/back3.webp') no-repeat center; /* Абсолютный путь к изображению фона */
+    background: url('/modules/pf2e-ts-adv-v2/journals/Rusthenge/back3.webp') no-repeat center; /* Абсолютный путь к изображению фона */
     background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
     background-attachment: fixed; /* Фиксированный фон, если нужно */
     opacity: 0.4; /* Прозрачность 10% */
@@ -151,7 +151,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('/modules/pf2e-ts-adv/journals/Rusthenge/back2.webp') no-repeat center center; /* Абсолютный путь к изображению фона */
+    background: url('/modules/pf2e-ts-adv/journals-v2/Rusthenge/back2.webp') no-repeat center center; /* Абсолютный путь к изображению фона */
     background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
     background-attachment: fixed; /* Фиксированный фон, если нужно */    background-size: cover; /* Масштабировать изображение, чтобы покрыть весь блок */
     opacity: 0.6; /* Прозрачность 10% */
