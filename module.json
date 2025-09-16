@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
