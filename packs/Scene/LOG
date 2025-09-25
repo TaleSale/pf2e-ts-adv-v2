@@ -1,8 +1,15 @@
-2025/09/21-09:06:54.354 25b0 Recovering log #1064
-2025/09/21-09:06:54.429 25b0 Delete type=0 #1064
-2025/09/21-09:06:54.429 25b0 Delete type=3 #1062
-2025/09/21-09:42:59.717 57c Level-0 table #1069: started
-2025/09/21-09:42:59.717 57c Level-0 table #1069: 0 bytes OK
-2025/09/21-09:42:59.751 57c Delete type=0 #1067
-2025/09/21-09:42:59.876 57c Manual compaction at level-0 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
-2025/09/21-09:42:59.877 57c Manual compaction at level-1 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
+2025/09/25-10:21:33.030 ae0 Recovering log #1109
+2025/09/25-10:21:33.060 ae0 Delete type=0 #1109
+2025/09/25-10:21:33.061 ae0 Delete type=3 #1107
+2025/09/25-13:25:43.624 24b8 Level-0 table #1116: started
+2025/09/25-13:25:43.658 24b8 Level-0 table #1116: 18445 bytes OK
+2025/09/25-13:25:43.674 24b8 Delete type=0 #1114
+2025/09/25-13:25:44.099 24b8 Manual compaction at level-0 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
+2025/09/25-13:25:44.107 24b8 Manual compaction at level-1 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at '!scenes.walls!dRVl0peS6EfZtd51.zd31blWZoC3kfkZP' @ 3429 : 1
+2025/09/25-13:25:44.107 24b8 Compacting 1@1 + 1@2 files
+2025/09/25-13:25:44.304 24b8 Generated table #1117@1: 3470 keys, 338838 bytes
+2025/09/25-13:25:44.304 24b8 Compacted 1@1 + 1@2 files => 338838 bytes
+2025/09/25-13:25:44.326 24b8 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/09/25-13:25:44.326 24b8 Delete type=2 #1112
+2025/09/25-13:25:44.326 24b8 Delete type=2 #1116
+2025/09/25-13:25:44.515 24b8 Manual compaction at level-1 from '!scenes.walls!dRVl0peS6EfZtd51.zd31blWZoC3kfkZP' @ 3429 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
