@@ -1,21 +1,8 @@
-2025/09/25-09:58:57.087 26a8 Recovering log #1106
-2025/09/25-09:58:57.419 26a8 Delete type=0 #1106
-2025/09/25-09:58:57.420 26a8 Delete type=3 #1104
-2025/09/25-10:16:14.128 24b8 Level-0 table #1110: started
-2025/09/25-10:16:14.128 24b8 Level-0 table #1110: 0 bytes OK
-2025/09/25-10:16:14.143 24b8 Delete type=0 #1108
-2025/09/25-10:16:14.144 24b8 Manual compaction at level-0 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at '!scenes!zJowLISjGlYwqtkC' @ 3372 : 1
-2025/09/25-10:16:14.144 24b8 Compacting 1@0 + 0@1 files
-2025/09/25-10:16:14.186 24b8 Generated table #1111@0: 34 keys, 63473 bytes
-2025/09/25-10:16:14.186 24b8 Compacted 1@0 + 0@1 files => 63473 bytes
-2025/09/25-10:16:14.225 24b8 compacted to: files[ 0 1 1 0 0 0 0 ]
-2025/09/25-10:16:14.226 24b8 Delete type=2 #1105
-2025/09/25-10:16:14.260 24b8 Manual compaction at level-0 from '!scenes!zJowLISjGlYwqtkC' @ 3372 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
-2025/09/25-10:16:14.661 24b8 Manual compaction at level-1 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at '!scenes!zJowLISjGlYwqtkC' @ 3372 : 1
-2025/09/25-10:16:14.661 24b8 Compacting 1@1 + 1@2 files
-2025/09/25-10:16:14.752 24b8 Generated table #1112@1: 3274 keys, 322884 bytes
-2025/09/25-10:16:14.752 24b8 Compacted 1@1 + 1@2 files => 322884 bytes
-2025/09/25-10:16:14.785 24b8 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/09/25-10:16:14.785 24b8 Delete type=2 #1045
-2025/09/25-10:16:14.785 24b8 Delete type=2 #1111
-2025/09/25-10:16:14.785 24b8 Manual compaction at level-1 from '!scenes!zJowLISjGlYwqtkC' @ 3372 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
+2025/09/26-09:42:43.416 3910 Recovering log #1144
+2025/09/26-09:42:43.502 3910 Delete type=0 #1144
+2025/09/26-09:42:43.502 3910 Delete type=3 #1142
+2025/09/26-12:04:25.327 2234 Level-0 table #1149: started
+2025/09/26-12:04:25.327 2234 Level-0 table #1149: 0 bytes OK
+2025/09/26-12:04:25.401 2234 Delete type=0 #1147
+2025/09/26-12:04:25.403 2234 Manual compaction at level-0 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)
+2025/09/26-12:04:25.403 2234 Manual compaction at level-1 from '!folders!4f7iB0LO6fSduqp5' @ 72057594037927935 : 1 .. '!scenes.walls!zJowLISjGlYwqtkC.zuRdeogZNSxhZ9s5' @ 0 : 0; will stop at (end)

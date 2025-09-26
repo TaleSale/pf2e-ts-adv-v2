@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.5.825",
+  "version": "1.5.9",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -26,7 +26,8 @@
     "journals/Rusthenge/Rusthenge.js",
     "journals/slithering/slithering.js",
     "journals/enmitycycle/enmitycycle.js",
-    "journals/SW/SW.js"
+    "journals/SW/SW.js",
+    "journals/RotR/RotR.js"
   ],
   "styles": [
     {
@@ -58,6 +59,9 @@
     },
     {
       "src": "journals/SW/SW.css"
+    },
+    {
+      "src": "journals/RotR/RotR.css"
     }
   ],
   "packs": [
