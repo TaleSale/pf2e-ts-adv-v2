@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -20,6 +20,11 @@
     "read.js",
     "journals/AoA/AoA.js",
     "journals/PFS1/PFS1.js",
+    "journals/PFS2/PFS2.js",
+    "journals/PFS3/PFS3.js",
+    "journals/PFS4/PFS4.js",
+    "journals/PFS5/PFS5.js",
+    "journals/PFS7/PFS7.js",
     "journals/PF1EHR/PF1EHR.js",
     "journals/CC/CC.js",
     "journals/fallofplaguestone/fallofplaguestone.js",
@@ -39,6 +44,21 @@
     },
     {
       "src": "journals/PFS1/PFS1.css"
+    },
+    {
+      "src": "journals/PFS2/PFS2.css"
+    },
+    {
+      "src": "journals/PFS3/PFS3.css"
+    },
+    {
+      "src": "journals/PFS4/PFS4.css"
+    },
+    {
+      "src": "journals/PFS5/PFS5.css"
+    },
+    {
+      "src": "journals/PFS7/PFS7.css"
     },
     {
       "src": "journals/PF1EHR/PF1EHR.css"

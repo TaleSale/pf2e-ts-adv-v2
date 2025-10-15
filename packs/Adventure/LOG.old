@@ -1,8 +1,16 @@
-2025/10/13-07:39:28.844 1eb8 Recovering log #1453
-2025/10/13-07:39:29.087 1eb8 Delete type=0 #1453
-2025/10/13-07:39:29.087 1eb8 Delete type=3 #1451
-2025/10/13-17:01:12.774 333c Level-0 table #1458: started
-2025/10/13-17:01:12.774 333c Level-0 table #1458: 0 bytes OK
-2025/10/13-17:01:12.832 333c Delete type=0 #1456
-2025/10/13-17:01:12.833 333c Manual compaction at level-0 from '!adventures!2oJJxVFuu7oEFzHO' @ 72057594037927935 : 1 .. '!folders!vNCwABD2qYrTn2dX' @ 0 : 0; will stop at (end)
-2025/10/13-17:01:13.281 333c Manual compaction at level-1 from '!adventures!2oJJxVFuu7oEFzHO' @ 72057594037927935 : 1 .. '!folders!vNCwABD2qYrTn2dX' @ 0 : 0; will stop at (end)
+2025/10/15-14:50:02.506 4620 Recovering log #1474
+2025/10/15-14:50:02.651 4620 Delete type=0 #1474
+2025/10/15-14:50:02.651 4620 Delete type=3 #1472
+2025/10/15-14:52:23.740 3b34 Compacting 1@1 + 4@2 files
+2025/10/15-14:52:24.006 3b34 Generated table #1477@1: 6 keys, 2422492 bytes
+2025/10/15-14:52:24.107 3b34 Generated table #1478@1: 2 keys, 2651904 bytes
+2025/10/15-14:52:24.217 3b34 Generated table #1479@1: 5 keys, 2387917 bytes
+2025/10/15-14:52:24.442 3b34 Generated table #1480@1: 5 keys, 2248468 bytes
+2025/10/15-14:52:24.513 3b34 Generated table #1481@1: 1 keys, 1405347 bytes
+2025/10/15-14:52:24.513 3b34 Compacted 1@1 + 4@2 files => 11116128 bytes
+2025/10/15-14:52:24.528 3b34 compacted to: files[ 0 0 11 0 0 0 0 ]
+2025/10/15-14:52:24.529 3b34 Delete type=2 #1312
+2025/10/15-14:52:24.530 3b34 Delete type=2 #1313
+2025/10/15-14:52:24.531 3b34 Delete type=2 #1362
+2025/10/15-14:52:24.532 3b34 Delete type=2 #1463
+2025/10/15-14:52:24.533 3b34 Delete type=2 #1473
