@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -18,6 +18,7 @@
     "copyuuid.js",
     "autoformat.js",
     "read.js",
+    "thumb.js",
     "journals/AoA/AoA.js",
     "journals/PFS1/PFS1.js",
     "journals/PFS2/PFS2.js",
