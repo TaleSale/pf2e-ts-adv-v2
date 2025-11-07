@@ -1,3 +1,8 @@
-2025/11/04-10:15:13.406 4610 Recovering log #1107
-2025/11/04-10:15:13.628 4610 Delete type=0 #1107
-2025/11/04-10:15:13.628 4610 Delete type=3 #1105
+2025/11/06-22:41:00.095 3ac8 Recovering log #1147
+2025/11/06-22:41:00.223 3ac8 Delete type=0 #1147
+2025/11/06-22:41:00.224 3ac8 Delete type=3 #1145
+2025/11/07-00:11:19.914 41ac Level-0 table #1152: started
+2025/11/07-00:11:19.914 41ac Level-0 table #1152: 0 bytes OK
+2025/11/07-00:11:19.931 41ac Delete type=0 #1150
+2025/11/07-00:11:19.931 41ac Manual compaction at level-0 from '!macros!BuNBVmfoItLO637l' @ 72057594037927935 : 1 .. '!macros!n1tNbSM9ZZY4LcHK' @ 0 : 0; will stop at (end)
+2025/11/07-00:11:19.931 41ac Manual compaction at level-1 from '!macros!BuNBVmfoItLO637l' @ 72057594037927935 : 1 .. '!macros!n1tNbSM9ZZY4LcHK' @ 0 : 0; will stop at (end)
