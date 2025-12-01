@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -20,6 +20,7 @@
     "read.js",
     "thumb.js",
     "click.js",
+    "scripts/monster-dc.js",
     "journals/AoA/AoA.js",
     "journals/PFS1/PFS1.js",
     "journals/PFS2/PFS2.js",
@@ -133,6 +134,17 @@
       "label": "Макросы",
       "path": "packs/Macros",
       "type": "Macro",
+      "system": "pf2e",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "Build",
+      "label": "Конструктов Существ",
+      "path": "packs/build",
+      "type": "Item",
       "ownership": {
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
@@ -148,13 +160,14 @@
         "Adventure",
         "Scene",
         "Actor",
-        "Macros"
+        "Macros",
+        "Build"
       ],
       "color": null,
       "folders": []
     }
   ],
-  "socket": true, 
+  "socket": true,
   "relationships": {
     "systems": [
       {

@@ -1,26 +1,3 @@
-2025/11/17-21:41:11.000 374c Recovering log #1905
-2025/11/17-21:41:11.058 374c Delete type=0 #1905
-2025/11/17-21:41:11.058 374c Delete type=3 #1904
-2025/11/17-23:44:12.108 4070 Level-0 table #1909: started
-2025/11/17-23:44:12.506 4070 Level-0 table #1909: 898164 bytes OK
-2025/11/17-23:44:12.531 4070 Delete type=0 #1907
-2025/11/17-23:44:12.583 4070 Manual compaction at level-0 from '!adventures!0UwhkjprXNK8Saxg' @ 72057594037927935 : 1 .. '!folders!vNCwABD2qYrTn2dX' @ 0 : 0; will stop at (end)
-2025/11/17-23:44:12.608 4070 Manual compaction at level-1 from '!adventures!0UwhkjprXNK8Saxg' @ 72057594037927935 : 1 .. '!folders!vNCwABD2qYrTn2dX' @ 0 : 0; will stop at '!adventures!VU34k9YaoBdU2RAa' @ 245 : 1
-2025/11/17-23:44:12.608 4070 Compacting 1@1 + 6@2 files
-2025/11/17-23:44:12.789 4070 Generated table #1910@1: 6 keys, 2501926 bytes
-2025/11/17-23:44:12.983 4070 Generated table #1911@1: 2 keys, 2283719 bytes
-2025/11/17-23:44:13.243 4070 Generated table #1912@1: 3 keys, 2122577 bytes
-2025/11/17-23:44:13.617 4070 Generated table #1913@1: 5 keys, 3112164 bytes
-2025/11/17-23:44:14.047 4070 Generated table #1914@1: 4 keys, 3423842 bytes
-2025/11/17-23:44:14.226 4070 Generated table #1915@1: 5 keys, 2387917 bytes
-2025/11/17-23:44:14.302 4070 Generated table #1916@1: 2 keys, 852430 bytes
-2025/11/17-23:44:14.302 4070 Compacted 1@1 + 6@2 files => 16684575 bytes
-2025/11/17-23:44:14.325 4070 compacted to: files[ 0 0 15 0 0 0 0 ]
-2025/11/17-23:44:14.325 4070 Delete type=2 #1710
-2025/11/17-23:44:14.325 4070 Delete type=2 #1711
-2025/11/17-23:44:14.326 4070 Delete type=2 #1871
-2025/11/17-23:44:14.326 4070 Delete type=2 #1872
-2025/11/17-23:44:14.327 4070 Delete type=2 #1873
-2025/11/17-23:44:14.327 4070 Delete type=2 #1874
-2025/11/17-23:44:14.328 4070 Delete type=2 #1909
-2025/11/17-23:44:14.358 4070 Manual compaction at level-1 from '!adventures!VU34k9YaoBdU2RAa' @ 245 : 1 .. '!folders!vNCwABD2qYrTn2dX' @ 0 : 0; will stop at (end)
+2025/12/01-16:22:35.427 24f4 Recovering log #2065
+2025/12/01-16:22:35.635 24f4 Delete type=0 #2065
+2025/12/01-16:22:35.635 24f4 Delete type=3 #2063
