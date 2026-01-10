@@ -32,7 +32,16 @@ class TSButton {
         { pattern: /Выживан[а-я]*_КС(\d+)/gi, replacement: '@Check[type:survival|dc:$1]' },
         { pattern: /Воровств[а-я]*_КС(\d+)/gi, replacement: '@Check[type:thievery|dc:$1]' },
         { pattern: /Восприят[а-я]*_КС(\d+)/gi, replacement: '@Check[type:perception|dc:$1]' },
+
+
         { pattern: /Чист[а-я]*_КС(\d+)/gi, replacement: '@Check[type:flat|dc:$1]' },
+        { pattern: /Безопасност[а-я]*_КС(\d+)/gi, replacement: '@Rebellion[type:security|dc:$1]' },
+        { pattern: /Секретн[а-я]*_КС(\d+)/gi, replacement: '@Rebellion[type:secrecy|dc:$1]' },
+        { pattern: /Верност[а-я]*_КС(\d+)/gi, replacement: '@Rebellion[type:loyalty|dc:$1]' },
+
+        { pattern: /Открыт[а-я]* Сил[а-я]*_КС(\d+)/gi, replacement: '[[/act force-open dc=$1]]' },
+        { pattern: /Вскрыт[а-я]*_КС(\d+)/gi, replacement: '[[/act pick-a-lock dc=$1]]' },
+
 
         { pattern: /Знан[а-я]*: Тассилон[а-я]*_КС(\d+)/gi, replacement: '@Check[type:thassilon-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Академич[а-я]*_КС(\d+)/gi, replacement: '@Check[type:academia-lore|dc:$1]' },
@@ -72,6 +81,7 @@ class TSButton {
         { pattern: /Знан[а-я]*: Динозавр[а-я]*_КС(\d+)/gi, replacement: '@Check[type:dinosaur-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Обществ[а-я]*_Искател[а-я]*_КС(\d+)/gi, replacement: '@Check[type:pathfinder-society-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Кинтарг[а-я]*_КС(\d+)/gi, replacement: '@Check[type:kintargo-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Дьявол[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
         { pattern: /КС_(\d+)/gi, replacement: 'КС$1' },
 
 

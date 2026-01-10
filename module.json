@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "1.9.2",
+  "version": "1.9.2.1",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -19,7 +19,7 @@
     "autoformat.js",
     "read.js",
     "thumb.js",
-    "click.js",
+    "convert-to-action.js",
     "scripts/monster-dc.js",
     "journals/AoA/AoA.js",
     "journals/PFS1/PFS1.js",
