@@ -1,5 +1,5 @@
 Hooks.once("init", () => {
-    // Таблица из GM Core (Table 2-11)
+    const DEBUG = true;
     const DC_TABLE = {
         "-1": { moderate: 13, high: 16, extreme: 19 },
         "0":  { moderate: 13, high: 16, extreme: 19 },
@@ -26,23 +26,198 @@ Hooks.once("init", () => {
         "21": { moderate: 41, high: 44, extreme: 48 },
         "22": { moderate: 42, high: 45, extreme: 50 },
         "23": { moderate: 43, high: 46, extreme: 51 },
-        "24": { moderate: 45, high: 48, extreme: 52 },
-        "25": { moderate: 46, high: 50, extreme: 53 } // На всякий случай
+        "24": { moderate: 45, high: 48, extreme: 52 }
     };
 
-    // Глобальная функция для вызова в предметах
     globalThis.MonsterDC = function(level, tier = "moderate") {
-        // Если уровень передан как строка или число, приводим к строке для поиска в объекте
         const lvl = String(level);
-        // Приводим тир к нижнему регистру
         const t = tier.toLowerCase();
-
-        // Проверка на существование уровня в таблице
-        if (!DC_TABLE[lvl]) return 10; // Возврат дефолтного значения при ошибке
-
-        // Возвращаем значение или moderate, если тир указан неверно
-        return DC_TABLE[lvl][t] || DC_TABLE[lvl]["moderate"];
+        const row = DC_TABLE[lvl];
+        if (!row) return null;
+        return row[t] ?? row.moderate ?? null;
     };
-    
+
+    const NUMERIC_RE = /^-?\d+$/;
+    const VARIANT_RE = /^V[123]$/i;
+
+    function toDcValue(value) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return null;
+        return number > 0 ? number : null;
+    }
+
+    function getActorLevel(actor) {
+        const level = actor?.system?.details?.level?.value ?? actor?.system?.details?.level ?? actor?.level ?? actor?.system?.level?.value;
+        return Number.isFinite(Number(level)) ? Number(level) : null;
+    }
+
+    function getVariantTier(variant) {
+        if (variant === "V2") return "high";
+        if (variant === "V3") return "extreme";
+        return "moderate";
+    }
+
+    function resolveActorDcValue(actor, value) {
+        if (!actor) return null;
+        const raw = String(value ?? "").trim();
+        if (!raw) return null;
+        if (NUMERIC_RE.test(raw)) return Number(raw);
+
+        const key = raw.toLowerCase();
+        const isNpc = actor.isOfType?.("npc") || actor.type === "npc";
+        const classDc = actor?.system?.attributes?.classDC ?? actor?.system?.attributes?.classDc;
+        const spellDc = actor?.system?.attributes?.spellDC ?? actor?.system?.attributes?.spellDc;
+
+        if (key === "class" || key === "class-dc" || key === "classdc" || key === "dcclass") {
+            if (isNpc) return null;
+            return toDcValue(classDc?.value ?? classDc);
+        }
+        if (key === "spell" || key === "spell-dc" || key === "spelldc") {
+            if (isNpc) return null;
+            return toDcValue(spellDc?.value ?? spellDc);
+        }
+        if (key === "class-spell" || key === "class-spell-dc") {
+            if (isNpc) return null;
+            const values = [toDcValue(classDc?.value ?? classDc), toDcValue(spellDc?.value ?? spellDc)]
+                .filter((v) => Number.isFinite(v));
+            return values.length ? Math.max(...values) : null;
+        }
+
+        const statistic = actor.getStatistic?.(key);
+        const statisticDc = toDcValue(statistic?.dc?.value ?? statistic?.dc);
+        if (statisticDc !== null) return statisticDc;
+
+        const save = actor.saves?.[key] ?? actor.system?.saves?.[key];
+        const saveDc = toDcValue(save?.dc?.value ?? save?.dc);
+        if (saveDc !== null) return saveDc;
+
+        if (key === "perception") {
+            const perception = actor.perception ?? actor.system?.attributes?.perception;
+            return toDcValue(perception?.dc?.value ?? perception?.dc);
+        }
+
+        return null;
+    }
+
+    function applyMonsterDcToCheckParams(paramString, actor) {
+        if (!actor || !(actor.isOfType?.("npc") || actor.type === "npc")) return null;
+        const level = getActorLevel(actor);
+        if (level === null) return null;
+
+        const rawParts = String(paramString).split("|");
+        let variant = null;
+        const parts = [];
+        for (const part of rawParts) {
+            const trimmed = part.trim();
+            if (VARIANT_RE.test(trimmed)) {
+                variant = trimmed.toUpperCase();
+                continue;
+            }
+            parts.push(part);
+        }
+
+        const tier = getVariantTier(variant);
+        const dcValue = MonsterDC(level, tier);
+        if (!Number.isFinite(Number(dcValue))) return null;
+
+        let dcIndex = -1;
+        const againstToRemove = new Set();
+        let removedAgainst = false;
+        let dcResolved = null;
+
+        for (let i = 0; i < parts.length; i += 1) {
+            const part = parts[i];
+            const colonIndex = part.indexOf(":");
+            if (colonIndex === -1) continue;
+
+            const key = part.slice(0, colonIndex).trim().toLowerCase();
+            const value = part.slice(colonIndex + 1).trim();
+
+            if (key === "dc") {
+                dcIndex = i;
+                if (NUMERIC_RE.test(value) && Number(value) <= 0) {
+                    dcResolved = null;
+                } else {
+                    dcResolved = resolveActorDcValue(actor, value);
+                }
+                continue;
+            }
+
+            if (key === "against") {
+                if (value.length === 0) {
+                    againstToRemove.add(i);
+                    removedAgainst = true;
+                } else {
+                    const againstResolved = resolveActorDcValue(actor, value);
+                    if (againstResolved !== null) continue;
+                    againstToRemove.add(i);
+                    removedAgainst = true;
+                }
+            }
+        }
+
+        const dcIsUsable = dcIndex !== -1 && dcResolved !== null;
+        let changed = false;
+
+        if (againstToRemove.size) {
+            for (const index of againstToRemove) {
+                parts[index] = null;
+                changed = true;
+            }
+        }
+
+        if (dcIndex !== -1 && !dcIsUsable) {
+            parts[dcIndex] = `dc:${dcValue}`;
+            changed = true;
+        }
+
+        if (dcIndex === -1 && removedAgainst) {
+            parts.splice(1, 0, `dc:${dcValue}`);
+            changed = true;
+        }
+
+        if (!changed) return null;
+        return parts.filter((part) => part !== null).join("|");
+    }
+
+    Hooks.once("ready", () => {
+        const TextEditorPF2e = game?.pf2e?.TextEditor ?? globalThis.TextEditorPF2e;
+        if (!TextEditorPF2e?.enrichString || TextEditorPF2e.enrichString.__monsterDcPatched) {
+            return;
+        }
+
+        const originalEnrichString = TextEditorPF2e.enrichString.bind(TextEditorPF2e);
+        const patched = async function(data, options = {}) {
+            try {
+                if (Array.isArray(data) && typeof data[1] === "string" && data[1].toLowerCase() === "check" && typeof data[2] === "string") {
+                    const resolvedRollData = typeof options.rollData === "function" ? options.rollData() : options.rollData;
+                    const actor = resolvedRollData?.actor ?? resolvedRollData?.item?.actor ?? options.relativeTo?.actor ?? options.relativeTo ?? null;
+                    const updated = applyMonsterDcToCheckParams(data[2], actor);
+                    if (DEBUG) {
+                        console.log("PF2e Monster DC Helper | Check", {
+                            params: data[2],
+                            actorType: actor?.type,
+                            level: getActorLevel(actor),
+                            updated
+                        });
+                    }
+                    if (updated) {
+                        const updatedData = Array.from(data);
+                        if (data.groups) updatedData.groups = data.groups;
+                        updatedData[2] = updated;
+                        return originalEnrichString(updatedData, options);
+                    }
+                }
+            } catch (error) {
+                console.warn("PF2e Monster DC Helper | Failed to adjust check DCs", error);
+            }
+
+            return originalEnrichString(data, options);
+        };
+
+        patched.__monsterDcPatched = true;
+        TextEditorPF2e.enrichString = patched;
+    });
+
     console.log("PF2e Monster DC Helper | Loaded");
 });

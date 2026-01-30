@@ -38,6 +38,8 @@ class TSButton {
         { pattern: /Безопасност[а-я]*_КС(\d+)/gi, replacement: '@Rebellion[type:security|dc:$1]' },
         { pattern: /Секретн[а-я]*_КС(\d+)/gi, replacement: '@Rebellion[type:secrecy|dc:$1]' },
         { pattern: /Верност[а-я]*_КС(\d+)/gi, replacement: '@Rebellion[type:loyalty|dc:$1]' },
+        { pattern: /(\d+d\d+|\d+)_Известн[а-я]*/gi, replacement: '@Rebellion[($1)[notoriety]]' },
+        { pattern: /(\d+d\d+|\d+)_Сторон[а-я]*/gi, replacement: '@Rebellion[($1)[supporters]]' },
 
         { pattern: /Открыт[а-я]* Сил[а-я]*_КС(\d+)/gi, replacement: '[[/act force-open dc=$1]]' },
         { pattern: /Вскрыт[а-я]*_КС(\d+)/gi, replacement: '[[/act pick-a-lock dc=$1]]' },
