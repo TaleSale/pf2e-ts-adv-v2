@@ -1,22 +1,11 @@
-2026/02/09-10:58:21.127 363c Recovering log #513
-2026/02/09-10:58:21.199 363c Level-0 table #515: started
-2026/02/09-10:58:21.303 363c Level-0 table #515: 576850 bytes OK
-2026/02/09-10:58:21.390 363c Delete type=0 #513
-2026/02/09-10:58:21.390 363c Delete type=3 #512
-2026/02/09-11:14:02.574 5b4 Compacting 1@0 + 1@1 files
-2026/02/09-11:14:02.681 5b4 Generated table #517@0: 466 keys, 637631 bytes
-2026/02/09-11:14:02.681 5b4 Compacted 1@0 + 1@1 files => 637631 bytes
-2026/02/09-11:14:02.752 5b4 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/02/09-11:14:02.753 5b4 Delete type=2 #509
-2026/02/09-11:14:02.754 5b4 Delete type=2 #515
-2026/02/09-13:25:50.143 5b4 Level-0 table #519: started
-2026/02/09-13:25:50.244 5b4 Level-0 table #519: 249607 bytes OK
-2026/02/09-13:25:50.384 5b4 Delete type=0 #516
-2026/02/09-13:25:50.409 5b4 Manual compaction at level-0 from '!folders!11YSLz52XcQQgcP6' @ 72057594037927935 : 1 .. '!items!zen6fDFSjWFQOLXK' @ 0 : 0; will stop at '!items!y7jf4KzZI72W4k07' @ 2597 : 1
-2026/02/09-13:25:50.409 5b4 Compacting 1@0 + 1@1 files
-2026/02/09-13:25:50.565 5b4 Generated table #520@0: 468 keys, 644538 bytes
-2026/02/09-13:25:50.565 5b4 Compacted 1@0 + 1@1 files => 644538 bytes
-2026/02/09-13:25:50.592 5b4 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/02/09-13:25:50.592 5b4 Delete type=2 #517
-2026/02/09-13:25:50.593 5b4 Delete type=2 #519
-2026/02/09-13:25:50.593 5b4 Manual compaction at level-0 from '!items!y7jf4KzZI72W4k07' @ 2597 : 1 .. '!items!zen6fDFSjWFQOLXK' @ 0 : 0; will stop at (end)
+2026/02/10-08:56:19.347 854 Recovering log #534
+2026/02/10-08:56:19.356 854 Level-0 table #536: started
+2026/02/10-08:56:19.556 854 Level-0 table #536: 120956 bytes OK
+2026/02/10-08:56:19.736 854 Delete type=0 #534
+2026/02/10-08:56:19.737 854 Delete type=3 #533
+2026/02/10-09:14:26.096 2c64 Compacting 1@0 + 1@1 files
+2026/02/10-09:14:26.210 2c64 Generated table #538@0: 478 keys, 661559 bytes
+2026/02/10-09:14:26.210 2c64 Compacted 1@0 + 1@1 files => 661559 bytes
+2026/02/10-09:14:26.238 2c64 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/02/10-09:14:26.238 2c64 Delete type=2 #530
+2026/02/10-09:14:26.238 2c64 Delete type=2 #536

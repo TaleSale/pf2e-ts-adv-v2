@@ -1,11 +1,12 @@
 /**
  * Скрипт для создания книги заклинаний (Monster Spellbook).
- * Версия 14.0: ИСПРАВЛЕНА логика уровней для Prepared.
+ * Версия 20.0: ИСПРАВЛЕНА проверка максимального круга для спонтанных/подготавливаемых.
  * 
- * Изменения:
- * - Prepared: Заклинание в книге сохраняет свой РОДНОЙ круг (из компендиума), 
- *   но подготавливается в слот того круга, где оно прописано в тексте.
- * - Spontaneous/Innate: Заклинание принудительно получает круг, указанный в тексте.
+ * Логика фильтрации уровня:
+ * 1. Вычисляется Максимальный круг (MaxRank) = ceil(Level / 2).
+ * 2. Если в строке НЕТ пометки "(X ур)": Скрипт пропускает круги выше MaxRank.
+ * 3. Если в строке ЕСТЬ пометка "(X ур)": Скрипт игнорирует MaxRank (считает, что это особое исключение),
+ *    но проверяет, достиг ли актер уровня X.
  */
 
 Hooks.on('createItem', async (item, context, userId) => {
@@ -14,13 +15,13 @@ Hooks.on('createItem', async (item, context, userId) => {
     if (!item.actor) return;
     if (!item.name.startsWith("TS-Spellbook")) return;
 
-    // 2. Настройки имени
+    // 2. Настройки
     const nameMatch = item.name.match(/TS-Spellbook\s*\(.*?\)\s*"(.*?)"/);
     const entryName = nameMatch ? nameMatch[1] : "Новый список";
     
     let tradition = "arcane"; 
     const lowerName = entryName.toLowerCase();
-    if (lowerName.includes("божеств") || lowerName.includes("divine")) tradition = "divine";
+    if (lowerName.includes("божеств") || lowerName.includes("divine") || lowerName.includes("сакральн")) tradition = "divine";
     if (lowerName.includes("оккульт") || lowerName.includes("occult")) tradition = "occult";
     if (lowerName.includes("природ") || lowerName.includes("primal")) tradition = "primal";
 
@@ -39,14 +40,20 @@ Hooks.on('createItem', async (item, context, userId) => {
     const isFocusMode = /фокус-/i.test(cleanText);
     const hasSlots = /\d+.*?\(\d+[\/\-]?.*?\)\s*:/.test(cleanText);
     const hasPreparedFlags = /@UUID\[.*?\](?:\{.*?\})?\s*[?+]+/.test(cleanText);
-
+    
     let entryType = "innate";
-    if (isFocusMode) entryType = "focus";
-    else if (hasSlots && hasPreparedFlags) entryType = "prepared";
-    else if (hasSlots) entryType = "spontaneous";
-    else entryType = "innate";
+    
+    if (isFocusMode) {
+        entryType = "focus";
+    } else if (hasSlots && hasPreparedFlags) {
+        entryType = "prepared";
+    } else if (hasSlots) { 
+        entryType = "spontaneous";
+    } else {
+        entryType = "innate";
+    }
 
-    console.log(`TS-Spellbook | Режим: ${entryType.toUpperCase()}`);
+    console.log(`TS-Spellbook | Режим: ${entryType.toUpperCase()} | Традиция: ${tradition}`);
 
     // 5. Создание Entry
     const entryData = {
@@ -75,11 +82,11 @@ Hooks.on('createItem', async (item, context, userId) => {
     const actorLevel = item.actor.level;
     const maxAvailableRank = Math.max(1, Math.ceil(actorLevel / 2));
 
-    // 6. Парсинг
+    // 6. Парсинг строк
     const lines = cleanText.split('\n').filter(l => l.trim() !== "");
     const spellsToCreate = [];
     const entryUpdateData = {}; 
-    const preparationQueues = {}; // { rank: { mandatory: [], conditional: [] } }
+    const preparationQueues = {}; 
     const calculatedSlots = {}; 
 
     let focusSpellsCount = 0;
@@ -87,12 +94,19 @@ Hooks.on('createItem', async (item, context, userId) => {
 
     for (const rawLine of lines) {
         let line = rawLine.trim();
+        
+        // Флаг: было ли явное требование уровня в строке?
+        let hasExplicitLevelReq = false;
 
-        // --- ПРОВЕРКА УРОВНЯ (4 ур) ---
+        // (4 ур) - Проверка уровня строки
         const levelReqMatch = line.match(/^\((\d+)\s*(?:ур|lvl|level|ur)\)\s*/i);
         if (levelReqMatch) {
             const requiredLevel = parseInt(levelReqMatch[1]);
+            // Если уровень мал - пропускаем
             if (actorLevel < requiredLevel) continue;
+            
+            // Если уровень подходит, помечаем, что это "особая" строка
+            hasExplicitLevelReq = true;
             line = line.substring(levelReqMatch[0].length).trim();
         }
 
@@ -124,25 +138,36 @@ Hooks.on('createItem', async (item, context, userId) => {
             const headerMatch = line.match(/^([^:]+?)(?:\s*\(([\d\/\-]+)\))?\s*:/);
             if (!headerMatch) continue;
 
-            const rankLabel = headerMatch[1].toLowerCase().trim();
+            const rankLabel = headerMatch[1].toUpperCase().trim(); 
             const rawSlotsString = headerMatch[2]; 
             const content = line.substring(headerMatch[0].length);
 
-            let rank = 0; // Ранг СЛОТА/КАТЕГОРИИ
-            if (rankLabel.includes("чары") || rankLabel.includes("cantrip")) rank = 0;
-            else {
-                const numMatch = rankLabel.match(/\d+/);
-                rank = numMatch ? parseInt(numMatch[0]) : 1;
+            let targetRank = 0; 
+
+            // Проверка на UPTO/ДО
+            const uptoMatch = rankLabel.match(/(?:UPTO|ДО)(\d+)/);
+            if (uptoMatch) {
+                const cap = parseInt(uptoMatch[1]);
+                targetRank = Math.max(1, Math.min(cap, maxAvailableRank));
+            } else {
+                if (rankLabel.includes("ЧАРЫ") || rankLabel.includes("CANTRIP")) targetRank = 0;
+                else {
+                    const numMatch = rankLabel.match(/\d+/);
+                    targetRank = numMatch ? parseInt(numMatch[0]) : 1;
+                }
             }
 
-            // Обычно фильтруем заклинания выше круга, но при явном указании (X ур) и слотов (1) - доверяем пользователю
-            // Если слоты не распарсились и ранг > макс, можно пропустить. Но Prepared часто имеет слоты заранее.
-            
+            // !!! ВЕРНУТАЯ ПРОВЕРКА !!!
+            // Если это не чары, и ранг выше доступного, и НЕ было явного (X ур) -> Пропускаем
+            if (targetRank !== 0 && targetRank > maxAvailableRank && !hasExplicitLevelReq) {
+                continue;
+            }
+
             // Расчет слотов
             let currentSlots = 0;
             if (rawSlotsString) {
-                if (rank === 0 && entryType === "prepared") currentSlots = parseInt(rawSlotsString) || 5; 
-                else if (rank === 1) {
+                if (targetRank === 0 && entryType === "prepared") currentSlots = parseInt(rawSlotsString) || 5; 
+                else if (targetRank === 1) {
                     const parts = rawSlotsString.split(/[\/-]/).map(Number);
                     if (parts.length >= 3) {
                         if (actorLevel < 1) currentSlots = parts[0];
@@ -151,8 +176,8 @@ Hooks.on('createItem', async (item, context, userId) => {
                     } else if (parts.length === 2) {
                         currentSlots = (actorLevel <= 1) ? parts[0] : parts[1];
                     } else currentSlots = parts[0];
-                } else if (rank > 1) {
-                    const startLevelForRank = (rank * 2) - 1;
+                } else if (targetRank > 1) {
+                    const startLevelForRank = (targetRank * 2) - 1;
                     const parts = rawSlotsString.split('-').map(Number);
                     const startSlots = parts[0];
                     const highSlots = parts.length > 1 ? parts[1] : startSlots;
@@ -160,13 +185,13 @@ Hooks.on('createItem', async (item, context, userId) => {
                     else currentSlots = highSlots;
                 }
 
-                entryUpdateData[`system.slots.slot${rank}.value`] = currentSlots;
-                entryUpdateData[`system.slots.slot${rank}.max`] = currentSlots;
-                calculatedSlots[rank] = currentSlots;
+                entryUpdateData[`system.slots.slot${targetRank}.value`] = currentSlots;
+                entryUpdateData[`system.slots.slot${targetRank}.max`] = currentSlots;
+                calculatedSlots[targetRank] = currentSlots;
             }
 
             const matches = [...content.matchAll(/@UUID\[([a-zA-Z0-9\-\.]+)\](?:\{.*?\})?(\s*[*?+]+)?/g)];
-            if (!preparationQueues[rank]) preparationQueues[rank] = { mandatory: [], conditional: [] };
+            if (!preparationQueues[targetRank]) preparationQueues[targetRank] = { mandatory: [], conditional: [] };
 
             for (const match of matches) {
                 const uuid = match[1];
@@ -177,71 +202,87 @@ Hooks.on('createItem', async (item, context, userId) => {
                     const spellObject = await fromUuid(uuid);
                     if (spellObject) {
                         const sSrc = spellObject.toObject();
+                        const baseRank = sSrc.system.level.value || 1;
                         sSrc.system.location = { value: spellcastingEntry.id };
                         sSrc.flags = foundry.utils.mergeObject(sSrc.flags || {}, { "monster-spellbook": { sourceUuid: uuid } });
-
                         if (entryType === "spontaneous") sSrc.system.location.signature = isSignature;
 
-                        // --- ЛОГИКА УРОВНЕЙ ---
-                        if (rank === 0) {
-                            // Чары всегда чары
+                        if (targetRank === 0) {
                             sSrc.system.location.heightenedLevel = maxAvailableRank;
                             if (!sSrc.system.traits.value.includes("cantrip")) sSrc.system.traits.value.push("cantrip");
                         } else {
-                            // !!! ИСПРАВЛЕНИЕ ЗДЕСЬ !!!
+                            sSrc.system.level = { value: baseRank };
                             if (entryType === "prepared") {
-                                // Для Prepared НЕ меняем уровень заклинания. Оно остается родного уровня (например 2).
-                                // Но удаляем heightenedLevel, чтобы оно стало "базовым".
                                 delete sSrc.system.location.heightenedLevel;
-                                
-                                // Если вдруг в компендиуме оно само по себе "Heightened +X", 
-                                // можно попытаться сбросить на базу, но обычно level.value корректен.
                             } else {
-                                // Для Spontaneous и остальных принудительно ставим уровень, куда мы его пишем
-                                sSrc.system.level = { value: rank };
-                                delete sSrc.system.location.heightenedLevel;
+                                sSrc.system.location.heightenedLevel = targetRank;
                             }
                         }
-
                         spellsToCreate.push(sSrc);
 
-                        // Логика очередей (привязываем к rank, который в заголовке строки)
                         if (entryType === "prepared") {
-                            while (flags.includes("?+")) { preparationQueues[rank].conditional.push(uuid); flags = flags.replace("?+", ""); }
-                            while (flags.includes("+")) { preparationQueues[rank].mandatory.push(uuid); flags = flags.replace("+", ""); }
+                            while (flags.includes("?+")) { preparationQueues[targetRank].conditional.push(uuid); flags = flags.replace("?+", ""); }
+                            while (flags.includes("+")) { preparationQueues[targetRank].mandatory.push(uuid); flags = flags.replace("+", ""); }
                         }
                     }
                 } catch (e) { console.warn(e); }
             }
         }
-        // --- INNATE ---
+        // --- ЛОГИКА INNATE (ВРОЖДЕННЫЕ) ---
         else if (entryType === "innate") {
              const headerMatch = line.match(/^([^:]+?)(?:\s*\(([\d\/\-]+)\))?\s*:/);
              if (headerMatch) {
-                 const rankLabel = headerMatch[1].toLowerCase().trim();
+                 const rankLabel = headerMatch[1].toUpperCase().trim();
+                 const headerUsesStr = headerMatch[2];
                  const content = line.substring(headerMatch[0].length);
-                 let rank = 0;
-                 if (!rankLabel.includes("чары") && !rankLabel.includes("cantrip")) {
-                    const numMatch = rankLabel.match(/\d+/);
-                    rank = numMatch ? parseInt(numMatch[0]) : 1;
+                 
+                 let targetRank = 0;
+                 
+                 const uptoMatch = rankLabel.match(/(?:UPTO|ДО)(\d+)/);
+                 if (uptoMatch) {
+                     const cap = parseInt(uptoMatch[1]);
+                     targetRank = Math.max(1, Math.min(cap, maxAvailableRank));
+                 } else {
+                     if (rankLabel.includes("ЧАРЫ") || rankLabel.includes("CANTRIP")) targetRank = 0;
+                     else {
+                        const numMatch = rankLabel.match(/\d+/);
+                        targetRank = numMatch ? parseInt(numMatch[0]) : 1;
+                     }
                  }
+                 
                  const matches = [...content.matchAll(/@UUID\[([a-zA-Z0-9\-\.]+)\](?:\{.*?\})?(?:\s*\(([^)]+)\))?/g)];
                  for (const match of matches) {
                      const uuid = match[1];
-                     const usageText = match[2];
+                     const spellUsageText = match[2];
+                     
                      try {
                          const sObj = await fromUuid(uuid);
                          if(sObj) {
                              const sSrc = sObj.toObject();
+                             const baseRank = sSrc.system.level.value || 1;
+
                              sSrc.system.location = { value: spellcastingEntry.id };
-                             if(rank===0) { sSrc.system.location.heightenedLevel = maxAvailableRank; if(!sSrc.system.traits.value.includes("cantrip")) sSrc.system.traits.value.push("cantrip"); } 
-                             else { sSrc.system.level = {value: rank}; sSrc.system.location.heightenedLevel = rank; }
                              
-                             if (usageText && /^\d+$/.test(usageText)) {
-                                 const u = parseInt(usageText); sSrc.system.location.uses = {value: u, max: u}; sSrc.system.frequency = {max: u, per: "day"};
+                             if(targetRank === 0) { 
+                                 sSrc.system.location.heightenedLevel = maxAvailableRank; 
+                                 if(!sSrc.system.traits.value.includes("cantrip")) sSrc.system.traits.value.push("cantrip"); 
+                             } else { 
+                                 sSrc.system.level = { value: baseRank }; 
+                                 sSrc.system.location.heightenedLevel = targetRank; 
+                             }
+                             
+                             let finalUsageText = spellUsageText || headerUsesStr;
+
+                             if (finalUsageText && /^\d+$/.test(finalUsageText)) {
+                                 const u = parseInt(finalUsageText); 
+                                 sSrc.system.location.uses = {value: u, max: u}; 
+                                 sSrc.system.frequency = {max: u, per: "day"};
                              } else {
-                                 sSrc.system.location.uses = {value: 99, max: 99}; sSrc.system.frequency = {max: 99, per: "day"};
-                                 if(usageText) sSrc.name = `${sSrc.name} (${usageText})`;
+                                 sSrc.system.location.uses = {value: 99, max: 99}; 
+                                 sSrc.system.frequency = {max: 99, per: "day"};
+                                 if (spellUsageText && isNaN(parseInt(spellUsageText))) {
+                                     sSrc.name = `${sSrc.name} (${spellUsageText})`;
+                                 }
                              }
                              spellsToCreate.push(sSrc);
                          }
@@ -251,43 +292,35 @@ Hooks.on('createItem', async (item, context, userId) => {
         }
     }
 
-    // 7. СОХРАНЕНИЕ
+    // --- СОХРАНЕНИЕ ---
     let createdSpells = [];
     if (spellsToCreate.length > 0) {
         createdSpells = await item.actor.createEmbeddedDocuments("Item", spellsToCreate);
         console.log(`TS-Spellbook | Создано заклинаний: ${createdSpells.length}`);
     }
 
-    // 8. ЗАПОЛНЕНИЕ СЛОТОВ (PREPARED)
+    // --- ЗАПОЛНЕНИЕ СЛОТОВ (PREPARED) ---
     if (entryType === "prepared" && createdSpells.length > 0) {
-        // Карта UUID -> RealID
         const uuidToRealId = {};
         for (const spell of createdSpells) {
             const srcUuid = spell.flags?.["monster-spellbook"]?.sourceUuid;
             if (srcUuid) uuidToRealId[srcUuid] = spell.id;
         }
-
-        // Заполнение по рангам заголовков
         for (const [rankStr, queues] of Object.entries(preparationQueues)) {
             const rank = parseInt(rankStr);
             const maxSlots = calculatedSlots[rank] || 0;
             const preparedData = {};
             let slotsUsed = 0;
-
-            // Обязательные
             for (const sourceUuid of queues.mandatory) {
                 if (slotsUsed >= maxSlots) break;
                 const realId = uuidToRealId[sourceUuid];
-                // Мы берем ID заклинания (даже если оно 2 уровня) и суем в слот (который 7 уровня)
                 if (realId) { preparedData[slotsUsed] = { id: realId }; slotsUsed++; }
             }
-            // Условные
             for (const sourceUuid of queues.conditional) {
                 if (slotsUsed >= maxSlots) break;
                 const realId = uuidToRealId[sourceUuid];
                 if (realId) { preparedData[slotsUsed] = { id: realId }; slotsUsed++; }
             }
-
             if (Object.keys(preparedData).length > 0) {
                 entryUpdateData[`system.slots.slot${rank}.prepared`] = preparedData;
             }
