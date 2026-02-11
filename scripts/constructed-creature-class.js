@@ -3,19 +3,19 @@
 window.ConstructedCreatureClass = {
     // Основные классы
     TEMPLATES: {
-        alchemist: { label: "Алхимик", stats: { perception: "low", crafting: "high", int: "high", dex: "moderate", str: "moderate", hp: "moderate", strikeBonus: "moderate", strikeDamage: "moderate" }},
-        barbarian: { label: "Варвар", stats: { athletics: "high", str: "high", con: "high", ac: "high", fort: "high", hp: "high", strikeBonus: "moderate", strikeDamage: "extreme" }},
-        bard: { label: "Бард", stats: { occultism: "moderate", perception: "high", cha: "high", fort: "low", wil: "high", hp: "moderate", strikeBonus: "low", spellcasting: "high" }},
-        champion: { label: "Чемпион", stats: { religion: "moderate", perception: "low", str: "high", cha: "moderate", ac: "extreme", ref: "low", strikeBonus: "moderate", strikeDamage: "high" }},
-        cleric: { label: "Жрец", stats: { religion: "high", perception: "high", wis: "high", ac: "low", fort: "low", wil: "high", hp: "moderate", strikeBonus: "low", spellcasting: "high" }},
-        druid: { label: "Друид", stats: { nature: "high", perception: "high", wis: "high", wil: "high", hp: "moderate", strikeBonus: "low", spellcasting: "high" }},
-        fighter: { label: "Воин", stats: { athletics: "high", str: "high", ac: "high", wil: "low", strikeBonus: "high", strikeDamage: "high" }},
-        investigator: { label: "Следователь", stats: { society: "high", perception: "high", int: "high", fort: "low", wil: "high", hp: "moderate", strikeBonus: "moderate", strikeDamage: "moderate" }},
-        monk: { label: "Монах", stats: { athletics: "high", dex: "high", wis: "moderate", ac: "high", strikeBonus: "moderate", strikeDamage: "high" }},
-        ranger: { label: "Следопыт", stats: { nature: "moderate", survival: "moderate", perception: "high", str: "high", ac: "high", strikeBonus: "moderate", strikeDamage: "high" }},
-        rogue: { label: "Плут", stats: { stealth: "high", thievery: "high", perception: "high", dex: "high", ac: "high", fort: "low", ref: "high", hp: "moderate", strikeBonus: "moderate", strikeDamage: "high" }},
-        sorcerer: { label: "Чародей", stats: { perception: "low", cha: "high", ac: "low", fort: "low", hp: "low", strikeBonus: "low", spellcasting: "high" }},
-        wizard: { label: "Волшебник", stats: { arcana: "high", perception: "low", int: "high", ac: "low", fort: "low", hp: "low", strikeBonus: "low", spellcasting: "high" }}
+        alchemist: { label: "Алхимик", stats: { perception: "low", crafting: "high", int: "high", dex: "moderate", str: "moderate", hp: "moderate", strikeBonus: "moderate", strikeDamage: "moderate" } },
+        barbarian: { label: "Варвар", stats: { athletics: "high", str: "high", con: "high", ac: "high", fort: "high", hp: "high", strikeBonus: "moderate", strikeDamage: "extreme" } },
+        bard: { label: "Бард", stats: { occultism: "moderate", perception: "high", cha: "high", fort: "low", wil: "high", hp: "moderate", strikeBonus: "low", spellcasting: "high" } },
+        champion: { label: "Чемпион", stats: { religion: "moderate", perception: "low", str: "high", cha: "moderate", ac: "extreme", ref: "low", strikeBonus: "moderate", strikeDamage: "high" } },
+        cleric: { label: "Жрец", stats: { religion: "high", perception: "high", wis: "high", ac: "low", fort: "low", wil: "high", hp: "moderate", strikeBonus: "low", spellcasting: "high" } },
+        druid: { label: "Друид", stats: { nature: "high", perception: "high", wis: "high", wil: "high", hp: "moderate", strikeBonus: "low", spellcasting: "high" } },
+        fighter: { label: "Воин", stats: { athletics: "high", str: "high", ac: "high", wil: "low", strikeBonus: "high", strikeDamage: "high" } },
+        investigator: { label: "Следователь", stats: { society: "high", perception: "high", int: "high", fort: "low", wil: "high", hp: "moderate", strikeBonus: "moderate", strikeDamage: "moderate" } },
+        monk: { label: "Монах", stats: { athletics: "high", dex: "high", wis: "moderate", ac: "high", strikeBonus: "moderate", strikeDamage: "high" } },
+        ranger: { label: "Следопыт", stats: { nature: "moderate", survival: "moderate", perception: "high", str: "high", ac: "high", strikeBonus: "moderate", strikeDamage: "high" } },
+        rogue: { label: "Плут", stats: { stealth: "high", thievery: "high", perception: "high", dex: "high", ac: "high", fort: "low", ref: "high", hp: "moderate", strikeBonus: "moderate", strikeDamage: "high" } },
+        sorcerer: { label: "Чародей", stats: { perception: "low", cha: "high", ac: "low", fort: "low", hp: "low", strikeBonus: "low", spellcasting: "high" } },
+        wizard: { label: "Волшебник", stats: { arcana: "high", perception: "low", int: "high", ac: "low", fort: "low", hp: "low", strikeBonus: "low", spellcasting: "high" } }
     },
 
     // Подклассы
@@ -41,10 +41,10 @@ window.ConstructedCreatureClass = {
         shadow: { name: "Теневой", uuid: "Compendium.pf2e-ts-adv-v2.Build.Item.dwIS1ACPI1PgWMzR" },
         fey: { name: "Фея", uuid: "Compendium.pf2e-ts-adv-v2.Build.Item.Uz6fPzf6BV9fVmUV" }
     },
-    
+
     _subclassCache: {},
 
-    getOptionsHTML: function(className) {
+    getOptionsHTML: function (className) {
         let label = "";
         let dataObj = null;
         let color = "";
@@ -70,34 +70,34 @@ window.ConstructedCreatureClass = {
         return "";
     },
 
-    activateListeners: function(html, updateCallback) {
+    activateListeners: function (html, updateCallback) {
         const self = this;
-        html.find("#mm-subclass-select").change(async function() {
+        html.find("#mm-subclass-select").change(async function () {
             const key = $(this).val();
-            const className = html.find("#mm-class-select").val(); 
+            const className = html.closest(".monster-maker-container").find("#mm-class-select").val();
             const descBlock = html.find("#mm-subclass-desc");
-            
+
             if (key !== "none") {
                 descBlock.show().html("<em>Загрузка данных...</em>");
                 const data = await self.getSubclassParsedData(className, key);
                 const content = data.desc || "<p>Описание отсутствует.</p>";
-                const enriched = await TextEditor.enrichHTML(content, {async: true});
+                const enriched = await TextEditor.enrichHTML(content, { async: true });
                 descBlock.html(enriched);
             } else {
                 descBlock.hide().html("");
             }
-            
+
             if (updateCallback) updateCallback();
         });
     },
 
     // Метод для получения "сырого" HTML описания (для парсера снаряжения)
-    getSubclassRawDescription: async function(className, subKey) {
+    getSubclassRawDescription: async function (className, subKey) {
         const data = await this.getSubclassParsedData(className, subKey);
         return data.desc || "";
     },
 
-    getSubclassParsedData: async function(className, subKey) {
+    getSubclassParsedData: async function (className, subKey) {
         const cacheKey = `${className}_${subKey}`;
         if (this._subclassCache[cacheKey]) return this._subclassCache[cacheKey];
 
@@ -120,7 +120,7 @@ window.ConstructedCreatureClass = {
                         result.lores = parsed.lores;
                     }
                 }
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
         this._subclassCache[cacheKey] = result;
         return result;
