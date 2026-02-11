@@ -1,11 +1,22 @@
-2026/02/10-08:56:19.347 854 Recovering log #534
-2026/02/10-08:56:19.356 854 Level-0 table #536: started
-2026/02/10-08:56:19.556 854 Level-0 table #536: 120956 bytes OK
-2026/02/10-08:56:19.736 854 Delete type=0 #534
-2026/02/10-08:56:19.737 854 Delete type=3 #533
-2026/02/10-09:14:26.096 2c64 Compacting 1@0 + 1@1 files
-2026/02/10-09:14:26.210 2c64 Generated table #538@0: 478 keys, 661559 bytes
-2026/02/10-09:14:26.210 2c64 Compacted 1@0 + 1@1 files => 661559 bytes
-2026/02/10-09:14:26.238 2c64 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/02/10-09:14:26.238 2c64 Delete type=2 #530
-2026/02/10-09:14:26.238 2c64 Delete type=2 #536
+2026/02/10-22:47:53.354 2554 Recovering log #537
+2026/02/10-22:47:53.354 2554 Level-0 table #540: started
+2026/02/10-22:47:53.411 2554 Level-0 table #540: 75043 bytes OK
+2026/02/10-22:47:53.482 2554 Delete type=0 #537
+2026/02/10-22:47:53.482 2554 Delete type=3 #535
+2026/02/10-23:03:50.022 2358 Compacting 1@0 + 1@1 files
+2026/02/10-23:03:50.207 2358 Generated table #542@0: 483 keys, 676235 bytes
+2026/02/10-23:03:50.207 2358 Compacted 1@0 + 1@1 files => 676235 bytes
+2026/02/10-23:03:50.234 2358 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/02/10-23:03:50.234 2358 Delete type=2 #538
+2026/02/10-23:03:50.235 2358 Delete type=2 #540
+2026/02/11-00:29:33.412 2358 Level-0 table #544: started
+2026/02/11-00:29:33.482 2358 Level-0 table #544: 291919 bytes OK
+2026/02/11-00:29:33.521 2358 Delete type=0 #541
+2026/02/11-00:29:33.571 2358 Manual compaction at level-0 from '!folders!11YSLz52XcQQgcP6' @ 72057594037927935 : 1 .. '!items!zqpqykn05Cnr2iPi' @ 0 : 0; will stop at '!items!x4VOKvNWg77CNtpC' @ 2941 : 1
+2026/02/11-00:29:33.571 2358 Compacting 1@0 + 1@1 files
+2026/02/11-00:29:33.689 2358 Generated table #545@0: 479 keys, 672909 bytes
+2026/02/11-00:29:33.689 2358 Compacted 1@0 + 1@1 files => 672909 bytes
+2026/02/11-00:29:33.712 2358 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/02/11-00:29:33.713 2358 Delete type=2 #542
+2026/02/11-00:29:33.713 2358 Delete type=2 #544
+2026/02/11-00:29:33.737 2358 Manual compaction at level-0 from '!items!x4VOKvNWg77CNtpC' @ 2941 : 1 .. '!items!zqpqykn05Cnr2iPi' @ 0 : 0; will stop at (end)
