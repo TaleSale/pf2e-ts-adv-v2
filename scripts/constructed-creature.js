@@ -1,4 +1,4 @@
-// ==================================================================
+﻿// ==================================================================
 // 1. ПАРСЕР ОПИСАНИЙ (Utility)
 // ==================================================================
 window.ConstructedCreatureParser = {
@@ -93,6 +93,7 @@ const MONSTER_TEMPLATES = {
 const CONSTRUCTED_CREATURE_TEMPLATE = `
 <div class="constructed-creature-wrapper">
     <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item tab-link-source" data-tab="source">Источник</a>
         <a class="item tab-link-template" data-tab="template">Шаблон</a>
         <a class="item tab-link-class" data-tab="class">Класс</a>
         <a class="item tab-link-ancestry" data-tab="ancestry">Родословная</a>
@@ -109,6 +110,7 @@ const CONSTRUCTED_CREATURE_TEMPLATE = `
         </div>
     </div>
     <section class="sheet-body">
+        <div class="tab tab-content-source" data-tab="source"><div id="source-tab-content" style="height:100%;"></div></div>
         <div class="tab tab-content-template" data-tab="template">
             <div class="monster-maker-container">
                 <p class="flavor-text">
@@ -116,6 +118,7 @@ const CONSTRUCTED_CREATURE_TEMPLATE = `
                     <span style="color:#a02c2c;font-weight:bold;">Красный</span> = Класс. 
                     <span style="color:#6f42c1;font-weight:bold;">Фиолетовый</span> = Родословная.
                     <span style="color:#b8256e;font-weight:bold;">Розовый</span> = Подкласс.
+                    <span style="color:#b58900;font-weight:bold;">Жёлтый</span> = Источник.
                     <span style="color:#2ea043;font-weight:bold;">Зелёный</span> = Другое.
                 </p>
                 <div class="form-group"><label>Роль</label><select id="mm-template-select"><option value="none">-- Выберите --</option>${Object.entries(MONSTER_TEMPLATES).map(([key, val]) => `<option value="${key}">${val.label}</option>`).join('')}</select></div>
@@ -163,7 +166,7 @@ function _generateStatBlockHTML(prefix) {
 // 4. ПРИЛОЖЕНИЕ (Application Class)
 // ==================================================================
 class ConstructedCreatureApp extends Application {
-    static get defaultOptions() { return mergeObject(super.defaultOptions, { id: "constructed-creature-app", title: "Конструктор Существ", width: 900, height: 850, resizable: true, tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "template" }], classes: ["pf2e", "sheet"] }); }
+    static get defaultOptions() { return mergeObject(super.defaultOptions, { id: "constructed-creature-app", title: "Конструктор Существ", width: 900, height: 850, resizable: true, tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "source" }], classes: ["pf2e", "sheet"] }); }
 
     async _renderInner(data) {
         // Подключаем CSS если нет
@@ -171,20 +174,31 @@ class ConstructedCreatureApp extends Application {
             const link = document.createElement("link");
             link.id = "constructed-creature-css";
             link.rel = "stylesheet";
-            link.href = "modules/pf2e-monster-maker/scripts/constructed-creature.css";
+            link.href = "modules/pf2e-ts-adv-v2/scripts/constructed-creature.css";
             document.head.appendChild(link);
         }
         const $html = $(CONSTRUCTED_CREATURE_TEMPLATE);
         this._populateSelects($html);
 
+        if (window.ConstructedCreatureSource) {
+            // Do not carry a stale Source actor across app openings
+            window.ConstructedCreatureSource.sourceActor = null;
+            window.ConstructedCreatureSource.analyzedData = {};
+            $html.find("#source-tab-content").html(window.ConstructedCreatureSource.getTabHTML());
+        }
+
         // Заполняем списки классов
         if (window.ConstructedCreatureClass) $html.find("#mm-class-select").append(Object.entries(window.ConstructedCreatureClass.TEMPLATES).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join(''));
         // Заполняем вкладки из других модулей
         if (window.ConstructedCreatureAncestry) $html.find("#ancestry-tab-content").html(window.ConstructedCreatureAncestry.getTabHTML());
-        if (window.ConstructedCreatureEquipment) $html.find("#equipment-tab-content").html(window.ConstructedCreatureEquipment.getTabHTML());
-
-        // Инициализируем пустое состояние снаряжения
-        $html.find("#equipment-tab-content").html("<div class='monster-maker-container'><p style='padding:10px;'>Выберите подкласс или корректировку со снаряжением.</p></div>");
+        if (window.ConstructedCreatureEquipment) {
+            window.ConstructedCreatureEquipment.clearManualItems?.();
+            $html.find("#equipment-tab-content").html(
+                window.ConstructedCreatureEquipment.getTabHTML([], 1, {
+                    emptyHint: "Выберите подкласс или корректировку со снаряжением."
+                })
+            );
+        }
 
         // Заполняем вкладку «Другое» (корректировки)
         if (window.ConstructedCreatureOther) {
@@ -207,6 +221,13 @@ class ConstructedCreatureApp extends Application {
         super.activateListeners(html);
         const refresh = async () => { await this._updateStatsUI(html); };
 
+        if (window.ConstructedCreatureSource) {
+            this._activateSourceListeners(html, refresh);
+            html.on("change", "#mm-source-keep-equipment", async () => {
+                await this._updateEquipmentUI(html);
+            });
+        }
+
         html.find("#mm-template-select").change(refresh);
         html.find("#mm-class-select").change(ev => {
             const cls = ev.target.value;
@@ -220,6 +241,7 @@ class ConstructedCreatureApp extends Application {
 
         if (window.ConstructedCreatureAncestry) window.ConstructedCreatureAncestry.activateListeners(html, refresh);
         if (window.ConstructedCreatureOther) window.ConstructedCreatureOther.activateListeners(html, refresh);
+        if (window.ConstructedCreatureEquipment) window.ConstructedCreatureEquipment.activateListeners(html);
 
         // Обновление снаряжения при смене уровня
         html.find("#mm-level-select").change(() => {
@@ -231,6 +253,20 @@ class ConstructedCreatureApp extends Application {
             html.find("select").not("#mm-level-select").val("none");
             html.find("#class-options-container").empty();
             html.find("#mm-ancestry-family").val("none").trigger("change");
+            html.find("#mm-source-keep-equipment, #mm-source-keep-traits, #mm-source-keep-speed-types, #mm-source-keep-avatar, #mm-source-priority-description").prop("checked", true);
+            if (window.ConstructedCreatureEquipment) {
+                window.ConstructedCreatureEquipment.clearManualItems?.();
+            }
+            if (window.ConstructedCreatureSource) {
+                window.ConstructedCreatureSource.sourceActor = null;
+                window.ConstructedCreatureSource.analyzedData = {};
+                const sourceInfo = html.find("#mm-source-info");
+                const sourceLabel = html.find("#mm-source-label");
+                const sourceAnalysis = html.find("#mm-source-analysis");
+                sourceInfo.hide();
+                sourceAnalysis.hide();
+                sourceLabel.text("Перетащите NPC сюда");
+            }
             refresh();
         });
     }
@@ -244,9 +280,124 @@ class ConstructedCreatureApp extends Application {
         return name + " Lore";
     }
 
+    _isDefaultFistStrike(item) {
+        if (!item?.isOfType?.("melee")) return false;
+        const slug = String(item.system?.slug ?? "").trim().toLowerCase();
+        const name = String(item.name ?? "").trim().toLowerCase();
+        if (slug === "fist") return true;
+        return /^(fist|кулак|удар кулаком|fist strike)$/.test(name);
+    }
+
+    async _normalizeDefaultFistAttack(actor, targetBonus) {
+        if (!actor?.itemTypes?.melee?.length) return;
+        const numericTarget = Number(targetBonus);
+        if (!Number.isFinite(numericTarget)) return;
+
+        const updates = [];
+        for (const item of actor.itemTypes.melee) {
+            if (!this._isDefaultFistStrike(item)) continue;
+
+            const bonus = Number(item.system?.bonus?.value ?? item.system?.toHit?.value);
+            if (Number.isFinite(bonus) && bonus === numericTarget) continue;
+
+            const update = {
+                _id: item.id,
+                system: {
+                    bonus: { value: Math.trunc(numericTarget) }
+                }
+            };
+            if (item.system?.toHit) {
+                update.system.toHit = { value: Math.trunc(numericTarget) };
+            }
+            updates.push(update);
+        }
+
+        if (updates.length > 0) {
+            await actor.updateEmbeddedDocuments("Item", updates);
+        }
+    }
+
+    _activateSourceListeners(html, refresh) {
+        const source = window.ConstructedCreatureSource;
+        const dropZone = html.find("#mm-source-drop-zone");
+        const sourceLabel = html.find("#mm-source-label");
+        const sourceInfo = html.find("#mm-source-info");
+        const sourceImg = html.find("#mm-source-img");
+        const sourceName = html.find("#mm-source-name");
+        const sourceLevel = html.find("#mm-source-level");
+        const sourceAnalysis = html.find("#mm-source-analysis");
+        const analysisList = html.find("#mm-analysis-list");
+        const sourcePriorityDescription = html.find("#mm-source-priority-description");
+
+        const parseDropData = (event) => {
+            const raw = event.originalEvent?.dataTransfer?.getData("text/plain")
+                ?? event.dataTransfer?.getData("text/plain")
+                ?? "";
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (_e) {
+                return null;
+            }
+        };
+
+        const isDescriptionPriority = () => sourcePriorityDescription.prop("checked") !== false;
+
+        const renderAnalysis = async (actor) => {
+            if (!actor) return;
+
+            const analyzed = source.analyzeCreature(actor, { preferDescription: isDescriptionPriority() }) || {};
+            analysisList.empty();
+            for (const [key, rank] of Object.entries(analyzed)) {
+                const statLabel = source.getStatLabel ? source.getStatLabel(key) : key;
+                const rankLabel = PROFICIENCY_LABELS[rank] || rank;
+                analysisList.append(`<li>${statLabel}: <strong>${rankLabel}</strong></li>`);
+            }
+            sourceAnalysis.show();
+            await refresh();
+        };
+
+        html.on("change", "#mm-source-priority-description", async () => {
+            if (!source.sourceActor) return;
+            await renderAnalysis(source.sourceActor);
+        });
+
+        dropZone.on("dragover", (event) => {
+            event.preventDefault();
+            dropZone.css({ borderColor: "#4a90e2", background: "rgba(74,144,226,0.08)" });
+        });
+
+        dropZone.on("dragleave", (event) => {
+            event.preventDefault();
+            dropZone.css({ borderColor: "#ccc", background: "rgba(0,0,0,0.02)" });
+        });
+
+        dropZone.on("drop", async (event) => {
+            event.preventDefault();
+            dropZone.css({ borderColor: "#ccc", background: "rgba(0,0,0,0.02)" });
+
+            const data = parseDropData(event);
+            if (!data) return;
+
+            const actor = await source.handleDrop(data);
+            if (!actor) return;
+
+            sourceImg.attr("src", actor.img || "");
+            sourceName.text(actor.name || "NPC");
+            sourceLevel.text(`Уровень ${actor.system?.details?.level?.value ?? "?"}`);
+            sourceLabel.text("Источник загружен");
+            sourceInfo.show();
+
+            html.find("input[name='creatureName']").val(actor.name || "Monster");
+            await renderAnalysis(actor);
+        });
+    }
     // --- ОБНОВЛЕНИЕ UI (СТАТЫ И ЦВЕТА) ---
     async _updateStatsUI(html) {
-        html.find('.stat-select').removeClass('select-highlight-tpl select-highlight-cls select-highlight-sub select-highlight-anc select-highlight-oth');
+        html.find('.stat-select').removeClass('select-highlight-tpl select-highlight-cls select-highlight-sub select-highlight-anc select-highlight-oth select-highlight-src');
+        const sourceStats = window.ConstructedCreatureSource?.sourceActor
+            ? (window.ConstructedCreatureSource.analyzedData || {})
+            : {};
         const tplKey = html.find("#mm-template-select").val();
         const tplStats = (tplKey !== "none" && MONSTER_TEMPLATES[tplKey]) ? MONSTER_TEMPLATES[tplKey].stats : {};
         const clsKey = html.find("#mm-class-select").val();
@@ -308,7 +459,9 @@ class ConstructedCreatureApp extends Application {
             const isSkill = $(this).hasClass("skill-select");
             const isSpell = this.name === "spellcasting";
             const defVal = (isSkill || isSpell) ? "none" : "moderate";
-            const vTpl = tplStats[name] || defVal;
+            const vSrc = sourceStats[name] || "none";
+            const baseVal = vSrc !== "none" ? vSrc : defVal;
+            const vTpl = tplStats[name] || baseVal;
             const vCls = clsStats[name] || "none";
             const vAnc = ancStats[name] || "none";
             const vSub = subStats[name] || "none";
@@ -334,14 +487,20 @@ class ConstructedCreatureApp extends Application {
                 } else {
                     if (rOth > rCls && rOth > rTpl) { final = vOth; css = "select-highlight-oth"; }
                     else if (rCls > rTpl) { final = vCls; css = "select-highlight-cls"; }
-                    else { if (tplStats[name]) css = "select-highlight-tpl"; }
+                    else {
+                        if (tplStats[name]) css = "select-highlight-tpl";
+                        else if (vSrc !== "none") css = "select-highlight-src";
+                    }
                 }
             } else {
                 if (rOth > rSub && rOth > rAnc && rOth > rCls && rOth > rTpl) { final = vOth; css = "select-highlight-oth"; }
                 else if (rSub > rAnc && rSub > rCls && rSub > rTpl) { final = vSub; css = "select-highlight-sub"; }
                 else if (rAnc > rCls && rAnc > rTpl) { final = vAnc; css = "select-highlight-anc"; }
                 else if (rCls > rTpl) { final = vCls; css = "select-highlight-cls"; }
-                else { if (tplStats[name]) css = "select-highlight-tpl"; }
+                else {
+                    if (tplStats[name]) css = "select-highlight-tpl";
+                    else if (vSrc !== "none") css = "select-highlight-src";
+                }
             }
 
             $(this).val(final);
@@ -357,6 +516,24 @@ class ConstructedCreatureApp extends Application {
         if (!window.ConstructedCreatureEquipment) return;
 
         const level = html.find("#mm-level-select").val();
+        const sourceModule = window.ConstructedCreatureSource;
+        const sourceActor = sourceModule?.sourceActor?.type === "npc" ? sourceModule.sourceActor : null;
+        const keepEquipment = html.find("#mm-source-keep-equipment").prop("checked") !== false;
+        const preferSourceEquipment = sourceModule?.shouldPreferSourceEquipment
+            ? sourceModule.shouldPreferSourceEquipment(sourceActor, keepEquipment)
+            : false;
+
+        if (preferSourceEquipment) {
+            const noticeHtml = sourceModule?.getSourceEquipmentNoticeHTML?.()
+                ?? "<p style='padding:10px;'>Используется снаряжение из источника. Классовое снаряжение не будет применено.</p>";
+            const eqHtml = window.ConstructedCreatureEquipment.getTabHTML([], level, {
+                sourceNoticeHtml: noticeHtml,
+                emptyHint: "Рекомендованное снаряжение отключено, так как используется источник."
+            });
+            html.find("#equipment-tab-content").html(eqHtml);
+            return;
+        }
+
         let classEquipment = [];
         let otherEquipment = [];
 
@@ -385,12 +562,10 @@ class ConstructedCreatureApp extends Application {
         }
         const mergedEquipment = [...mergedMap.values()];
 
-        if (mergedEquipment.length > 0) {
-            const eqHtml = window.ConstructedCreatureEquipment.getTabHTML(mergedEquipment, level);
-            html.find("#equipment-tab-content").html(eqHtml);
-        } else {
-            html.find("#equipment-tab-content").html("<div class='monster-maker-container'><p style='padding:10px;'>Выберите подкласс или корректировку со снаряжением.</p></div>");
-        }
+        const eqHtml = window.ConstructedCreatureEquipment.getTabHTML(mergedEquipment, level, {
+            emptyHint: "Выберите подкласс или корректировку со снаряжением."
+        });
+        html.find("#equipment-tab-content").html(eqHtml);
     }
 
     // ==================================================================
@@ -401,6 +576,34 @@ class ConstructedCreatureApp extends Application {
         const level = html.find("select[name='level']").val();
         const MONSTER_STATS = window.CC_MONSTER_STATS;
         if (!MONSTER_STATS) return;
+        const sourceModule = window.ConstructedCreatureSource;
+        const sourceActor = sourceModule?.sourceActor?.type === "npc" ? sourceModule.sourceActor : null;
+        const keepSourceEquipment = html.find("#mm-source-keep-equipment").prop("checked") !== false;
+        const keepSourceTraits = html.find("#mm-source-keep-traits").prop("checked") !== false;
+        const keepSourceSpeedTypes = html.find("#mm-source-keep-speed-types").prop("checked") !== false;
+        const keepSourceAvatar = html.find("#mm-source-keep-avatar").prop("checked") !== false;
+        const preferSourceEquipment = sourceModule?.shouldPreferSourceEquipment
+            ? sourceModule.shouldPreferSourceEquipment(sourceActor, keepSourceEquipment)
+            : false;
+        const cloneData = (value) => {
+            if (value === null || value === undefined) return value;
+            if (globalThis.foundry?.utils?.deepClone) return foundry.utils.deepClone(value);
+            return JSON.parse(JSON.stringify(value));
+        };
+        const sourceActorData = sourceActor ? sourceActor.toObject() : null;
+        const sourceSpeed = sourceActorData ? cloneData(sourceActorData.system?.attributes?.speed) : null;
+        const sourceSenses = sourceActorData ? cloneData(sourceActorData.system?.perception?.senses) : null;
+        const sourceDetailsLanguages = sourceActorData ? cloneData(sourceActorData.system?.details?.languages) : null;
+        const sourceTraitsLanguages = sourceActorData ? cloneData(sourceActorData.system?.traits?.languages) : null;
+        const sourceTraitsValue = sourceActorData ? cloneData(sourceActorData.system?.traits?.value) : null;
+        const sourceTraitsRarity = sourceActorData ? cloneData(sourceActorData.system?.traits?.rarity) : null;
+        const sourceAvatar = sourceActorData?.img ?? sourceActor?.img ?? null;
+        const sourceTokenAvatar = sourceActorData?.prototypeToken?.texture?.src
+            ?? sourceActor?.prototypeToken?.texture?.src
+            ?? sourceActorData?.prototypeToken?.img
+            ?? sourceActor?.prototypeToken?.img
+            ?? sourceAvatar
+            ?? null;
 
         const finalStats = {};
         html.find(".stat-select.tpl-stat").each(function () { finalStats[this.name] = $(this).val(); });
@@ -423,6 +626,7 @@ class ConstructedCreatureApp extends Application {
         // 2. РОДОСЛОВНАЯ (Traits + Items)
         let ancestryTraits = [];
         let itemsToCreate = [];
+        let sourceItemsToCreate = [];
 
         if (window.ConstructedCreatureAncestry) {
             const ancUuid = window.ConstructedCreatureAncestry.getSelectedUUID(html);
@@ -433,21 +637,53 @@ class ConstructedCreatureApp extends Application {
             }
         }
 
+        const mergedTraits = Array.isArray(ancestryTraits) ? [...ancestryTraits] : [];
+        if (keepSourceTraits && Array.isArray(sourceTraitsValue)) {
+            for (const trait of sourceTraitsValue) {
+                if (!trait || mergedTraits.includes(trait)) continue;
+                mergedTraits.push(trait);
+            }
+        }
+
         const actorData = {
             name: name, type: "npc",
+            ...(keepSourceAvatar && sourceAvatar ? { img: sourceAvatar } : {}),
+            ...(keepSourceAvatar && sourceTokenAvatar ? { prototypeToken: { texture: { src: sourceTokenAvatar } } } : {}),
             system: {
-                details: { level: { value: parseInt(level) }, publication: { title: "Constructed Creature", authors: "", license: "OGL", remaster: true } },
+                details: {
+                    level: { value: parseInt(level) },
+                    publication: { title: "Constructed Creature", authors: "", license: "OGL", remaster: true },
+                    ...(sourceDetailsLanguages ? { languages: sourceDetailsLanguages } : {})
+                },
                 abilities: { str: { mod: strMod }, dex: { mod: dexMod }, con: { mod: conMod }, int: { mod: intMod }, wis: { mod: wisMod }, cha: { mod: chaMod } },
-                attributes: { hp: { value: hpMax, max: hpMax }, ac: { value: acVal } },
+                attributes: { hp: { value: hpMax, max: hpMax }, ac: { value: acVal }, speed: (keepSourceSpeedTypes && sourceSpeed) ? sourceSpeed : { value: 25 } },
                 saves: { fortitude: { value: fortVal }, reflex: { value: refVal }, will: { value: willVal } },
-                perception: { mod: perVal },
+                perception: { mod: perVal, senses: sourceSenses ?? [] },
                 skills: {},
-                traits: { value: ancestryTraits }
+                traits: {
+                    value: mergedTraits,
+                    ...(sourceTraitsLanguages ? { languages: sourceTraitsLanguages } : {}),
+                    ...(keepSourceTraits && sourceTraitsRarity ? { rarity: sourceTraitsRarity } : {})
+                }
             }
         };
 
         const actor = await Actor.create(actorData);
         if (!actor) return;
+
+        // Compatibility pass: ensure languages are copied regardless of PF2e data path version
+        if (sourceActor) {
+            const langUpdates = {};
+            if (sourceDetailsLanguages !== null && sourceDetailsLanguages !== undefined) {
+                langUpdates["system.details.languages"] = cloneData(sourceDetailsLanguages);
+            }
+            if (sourceTraitsLanguages !== null && sourceTraitsLanguages !== undefined) {
+                langUpdates["system.traits.languages"] = cloneData(sourceTraitsLanguages);
+            }
+            if (Object.keys(langUpdates).length > 0) {
+                await actor.update(langUpdates);
+            }
+        }
 
         // 3. НАВЫКИ
         const skillsUpdate = {};
@@ -478,13 +714,22 @@ class ConstructedCreatureApp extends Application {
             }
         });
 
-        // 5. STRIKES & SPELLS
-        const sBonus = getVal("strikeBonus", "strikeBonus");
-        const sDmg = getVal("strikeDamage", "strikeDamage");
-        if (sBonus && sDmg) itemsToCreate.push({ name: "Удар", type: "melee", system: { bonus: { value: sBonus }, damageRolls: { "0": { damage: sDmg, damageType: "bludgeoning" } }, weaponType: { value: "melee" } } });
+        // 5. SOURCE ITEMS
+        if (sourceActor && sourceModule?.prepareSourceItems) {
+            sourceItemsToCreate = sourceModule.prepareSourceItems(sourceActor, Number(level), { includeEquipment: keepSourceEquipment });
+        }
 
-        const spellDC = getVal("spellcasting", "spellcasting");
-        if (spellDC) itemsToCreate.push({ name: "Заклинания", type: "spellcastingEntry", system: { spelldc: { value: spellDC, dc: spellDC + 10 }, tradition: "arcane", prepared: { value: "innate" }, showUnpreparedSpells: { value: true } } });
+
+
+        // 5. STRIKES & SPELLS
+        if (!sourceActor) {
+            const sBonus = getVal("strikeBonus", "strikeBonus");
+            const sDmg = getVal("strikeDamage", "strikeDamage");
+            if (sBonus && sDmg) itemsToCreate.push({ name: "Удар", type: "melee", system: { bonus: { value: sBonus }, damageRolls: { "0": { damage: sDmg, damageType: "bludgeoning" } }, weaponType: { value: "melee" } } });
+
+            const spellDC = getVal("spellcasting", "spellcasting");
+            if (spellDC) itemsToCreate.push({ name: "Заклинания", type: "spellcastingEntry", system: { spelldc: { value: spellDC, dc: spellDC + 10 }, tradition: "arcane", prepared: { value: "innate" }, showUnpreparedSpells: { value: true } } });
+        }
 
         // 6. ПОДКЛАССЫ
         if (window.ConstructedCreatureClass) {
@@ -492,13 +737,21 @@ class ConstructedCreatureApp extends Application {
             const subKey = html.find("#mm-subclass-select").val();
             if (subKey && subKey !== 'none') {
                 const subData = await window.ConstructedCreatureClass.getSubclassParsedData(clsName, subKey);
-                if (subData.items && subData.items.length) itemsToCreate.push(...subData.items);
+                if (subData.items && subData.items.length) {
+                    const filteredSubclassItems = preferSourceEquipment
+                        ? (sourceModule?.filterOutPhysicalItems?.(subData.items) ?? subData.items)
+                        : subData.items;
+                    if (filteredSubclassItems.length > 0) itemsToCreate.push(...filteredSubclassItems);
+                }
             }
         }
 
         // 7. СНАРЯЖЕНИЕ
         if (window.ConstructedCreatureEquipment) {
-            const eqItems = await window.ConstructedCreatureEquipment.getFinalItems(html.find("#equipment-tab-content"), level);
+            const eqItems = await window.ConstructedCreatureEquipment.getFinalItems(html.find("#equipment-tab-content"), level, {
+                includeRecommended: !preferSourceEquipment,
+                includeManual: true
+            });
             if (eqItems.length > 0) itemsToCreate.push(...eqItems);
         }
 
@@ -508,7 +761,129 @@ class ConstructedCreatureApp extends Application {
             if (otherItems.length > 0) itemsToCreate.push(...otherItems);
         }
 
-        if (itemsToCreate.length > 0) await actor.createEmbeddedDocuments("Item", itemsToCreate);
+        if (itemsToCreate.length > 0) {
+            await actor.createEmbeddedDocuments("Item", itemsToCreate);
+        }
+
+        // Source import is applied separately so it cannot block class/equipment import
+        if (sourceItemsToCreate.length > 0) {
+            let imported = 0;
+            let failed = 0;
+
+            const getSourceImportMeta = (itemData) => itemData?.flags?.["pf2e-ts-adv-v2"]?.sourceImport ?? null;
+            const clearSourceImportMeta = (itemData) => {
+                const allFlags = itemData?.flags;
+                if (!allFlags || typeof allFlags !== "object") return;
+                const moduleFlags = allFlags["pf2e-ts-adv-v2"];
+                if (!moduleFlags || typeof moduleFlags !== "object") return;
+                delete moduleFlags.sourceImport;
+                if (Object.keys(moduleFlags).length === 0) delete allFlags["pf2e-ts-adv-v2"];
+                if (Object.keys(allFlags).length === 0) delete itemData.flags;
+            };
+
+            const sourceEntryIdMap = new Map();
+            const sourceSpellIdMap = new Map();
+            const sourceEntrySlotsMap = new Map();
+            const nonSpellItems = sourceItemsToCreate.filter((itemData) => itemData?.type !== "spell");
+            const spellItems = sourceItemsToCreate.filter((itemData) => itemData?.type === "spell");
+
+            for (const itemData of nonSpellItems) {
+                try {
+                    const importMeta = getSourceImportMeta(itemData);
+                    if (itemData?.type === "spellcastingEntry") {
+                        const sourceEntryId = importMeta?.sourceItemId;
+                        const sourceSlots = itemData?.system?.slots;
+                        if (typeof sourceEntryId === "string" && sourceEntryId.length > 0 && sourceSlots && typeof sourceSlots === "object") {
+                            sourceEntrySlotsMap.set(sourceEntryId, foundry.utils.deepClone(sourceSlots));
+                        }
+                    }
+                    clearSourceImportMeta(itemData);
+                    const createdDocs = await actor.createEmbeddedDocuments("Item", [itemData]);
+                    const created = createdDocs?.[0];
+
+                    if (created?.type === "spellcastingEntry") {
+                        const sourceEntryId = importMeta?.sourceItemId;
+                        if (typeof sourceEntryId === "string" && sourceEntryId.length > 0) {
+                            sourceEntryIdMap.set(sourceEntryId, created.id);
+                        }
+                    }
+                    imported += 1;
+                } catch (error) {
+                    failed += 1;
+                    console.error("Constructed Creature | Source item import failed", itemData?.name, error);
+                }
+            }
+
+            for (const itemData of spellItems) {
+                try {
+                    const importMeta = getSourceImportMeta(itemData);
+                    const sourceSpellId = importMeta?.sourceItemId;
+                    const sourceEntryId = importMeta?.sourceSpellcastingEntryId;
+                    const mappedEntryId = typeof sourceEntryId === "string" ? sourceEntryIdMap.get(sourceEntryId) : null;
+
+                    if (mappedEntryId) {
+                        itemData.system = itemData.system ?? {};
+                        itemData.system.location = { ...(itemData.system.location ?? {}), value: mappedEntryId };
+                    } else if (itemData?.system?.location) {
+                        itemData.system.location = { ...(itemData.system.location ?? {}), value: null };
+                    }
+
+                    clearSourceImportMeta(itemData);
+                    const createdDocs = await actor.createEmbeddedDocuments("Item", [itemData]);
+                    const created = createdDocs?.[0];
+                    if (created?.id && typeof sourceSpellId === "string" && sourceSpellId.length > 0) {
+                        sourceSpellIdMap.set(sourceSpellId, created.id);
+                    }
+                    imported += 1;
+                } catch (error) {
+                    failed += 1;
+                    console.error("Constructed Creature | Source spell import failed", itemData?.name, error);
+                }
+            }
+
+            for (const [sourceEntryId, createdEntryId] of sourceEntryIdMap.entries()) {
+                const sourceSlots = sourceEntrySlotsMap.get(sourceEntryId);
+                if (!sourceSlots || typeof sourceSlots !== "object") continue;
+
+                const entry = actor.items.get(createdEntryId);
+                if (!entry) continue;
+
+                const entryUpdate = {};
+                let preparedSlotsTouched = 0;
+
+                for (const [slotKey, slotData] of Object.entries(sourceSlots)) {
+                    const prepared = slotData?.prepared;
+                    if (!prepared || typeof prepared !== "object") continue;
+
+                    const remappedPrepared = {};
+                    for (const [preparedKey, preparedData] of Object.entries(prepared)) {
+                        const oldSpellId = preparedData?.id;
+                        if (typeof oldSpellId !== "string" || oldSpellId.length === 0) continue;
+                        const newSpellId = sourceSpellIdMap.get(oldSpellId);
+                        if (!newSpellId) continue;
+                        remappedPrepared[preparedKey] = { ...(preparedData ?? {}), id: newSpellId };
+                    }
+
+                    entryUpdate[`system.slots.${slotKey}.prepared`] = remappedPrepared;
+                    preparedSlotsTouched += 1;
+                }
+
+                if (preparedSlotsTouched > 0) {
+                    await entry.update(entryUpdate);
+                }
+            }
+
+            if (failed > 0) {
+                ui.notifications.warn(`Источник: импортировано ${imported}, с ошибками ${failed}.`);
+            }
+        }
+
+        if (sourceActor && sourceModule?.showReport) sourceModule.showReport();
+
+        const normalizedStrikeBonus = getVal("strikeBonus", "strikeBonus")
+            ?? MONSTER_STATS["strikeBonus"]?.[level]?.moderate
+            ?? null;
+        await this._normalizeDefaultFistAttack(actor, normalizedStrikeBonus);
 
         this.close();
         actor.sheet.render(true);
@@ -529,3 +904,5 @@ Hooks.on("renderActorDirectory", (app, html, data) => {
     const compendiumBtn = footer.find("[data-action='openCompendiumBrowser']");
     if (compendiumBtn.length > 0) compendiumBtn.before(myButton); else footer.append(myButton);
 });
+
+
