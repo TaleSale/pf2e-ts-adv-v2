@@ -379,18 +379,8 @@ window.ConstructedCreatureSource = {
 
         const rawDc = Number(itemData?.system?.spelldc?.dc);
         const rawAttack = Number(itemData?.system?.spelldc?.value);
-        const sourceDc = Number.isFinite(rawDc) ? rawDc : (Number.isFinite(rawAttack) ? rawAttack + 10 : NaN);
+        const sourceDc = Number.isFinite(rawDc) ? rawDc : (Number.isFinite(rawAttack) ? rawAttack + 8 : NaN);
         const resultParts = [];
-
-        let attack = NaN;
-        if (Number.isFinite(rawAttack)) {
-            const tokenInfo = this.buildAttackTokenFromValue(sourceLevel, rawAttack);
-            const targetAttack = tokenInfo ? this.resolveAttackTokenForLevel(targetLevel, tokenInfo.token) : NaN;
-            if (Number.isFinite(targetAttack)) {
-                attack = Math.trunc(targetAttack);
-                resultParts.push(`atk ${Math.trunc(rawAttack)} (${tokenInfo.token}) -> ${attack} (ур. ${targetLevel})`);
-            }
-        }
 
         let dc = NaN;
         if (Number.isFinite(sourceDc)) {
@@ -404,9 +394,9 @@ window.ConstructedCreatureSource = {
             }
         }
 
-        if (!Number.isFinite(attack) && Number.isFinite(dc)) attack = dc - 10;
-        if (!Number.isFinite(dc) && Number.isFinite(attack)) dc = attack + 10;
-        if (!Number.isFinite(attack) && !Number.isFinite(dc)) return null;
+        if (!Number.isFinite(dc)) return null;
+        const attack = dc - 8;
+        resultParts.push(`atk ${attack} (dc-8)`);
 
         itemData.system = itemData.system ?? {};
         itemData.system.spelldc = {
@@ -858,11 +848,38 @@ window.ConstructedCreatureSource = {
         const includeEquipment = options.includeEquipment !== false;
         this.conversionLog.push(`<li><strong>Источник:</strong> перенос снаряжения ${includeEquipment ? "включен" : "выключен"}</li>`);
         const baseTypes = ["action", "feat", "spellcastingEntry", "effect", "passive", "melee", "spell", "lore"];
+        const sourceCandidates = [];
 
         for (const item of actor.items) {
             const keepBase = baseTypes.includes(item.type);
             const isPhysical = item.isOfType?.("physical") || this.isPhysicalItemType(item.type);
             if (!keepBase && !(includeEquipment && isPhysical)) continue;
+            sourceCandidates.push(item);
+        }
+
+        const candidateIds = new Set(sourceCandidates.map((item) => item?.id).filter((id) => typeof id === "string" && id.length > 0));
+        const resolveGrantedById = (item) => {
+            const directId = item?.grantedBy?.id
+                ?? item?.flags?.pf2e?.grantedBy?.id
+                ?? item?.system?.context?.grantedBy?.id
+                ?? null;
+            if (typeof directId === "string" && directId.length > 0) return directId;
+
+            const uuid = item?.flags?.pf2e?.grantedBy?.uuid
+                ?? item?.system?.context?.grantedBy?.uuid
+                ?? null;
+            if (typeof uuid !== "string" || uuid.length === 0) return null;
+
+            const lastSegment = uuid.split(".").pop();
+            return (typeof lastSegment === "string" && lastSegment.length > 0) ? lastSegment : null;
+        };
+
+        for (const item of sourceCandidates) {
+            const grantedById = resolveGrantedById(item);
+            if (grantedById && candidateIds.has(grantedById)) {
+                this.conversionLog.push(`<li><strong>${item.name}</strong> <em>(${item.type})</em>: пропущено (выдается другим предметом источника)</li>`);
+                continue;
+            }
 
             const itemData = item.toObject();
             itemData.flags = itemData.flags && typeof itemData.flags === "object" ? itemData.flags : {};

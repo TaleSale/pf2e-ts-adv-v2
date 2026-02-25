@@ -317,6 +317,42 @@ class ConstructedCreatureApp extends Application {
         }
     }
 
+    async _normalizeSpellcastingEntries(actor, targetAttack) {
+        if (!actor?.itemTypes?.spellcastingEntry?.length) return;
+        const numericAttack = Number(targetAttack);
+        if (!Number.isFinite(numericAttack)) return;
+
+        const fallbackAttack = Math.trunc(numericAttack);
+        const fallbackDc = fallbackAttack + 8;
+        const updates = [];
+
+        for (const entry of actor.itemTypes.spellcastingEntry) {
+            const rawAttack = Number(entry.system?.spelldc?.value);
+            const rawDc = Number(entry.system?.spelldc?.dc);
+            const hasAttack = Number.isFinite(rawAttack) && rawAttack > 0;
+            const hasDc = Number.isFinite(rawDc) && rawDc > 0;
+            if (hasAttack && hasDc) continue;
+
+            const nextAttack = hasAttack ? Math.trunc(rawAttack) : fallbackAttack;
+            const nextDc = hasDc ? Math.trunc(rawDc) : (hasAttack ? Math.trunc(rawAttack) + 8 : fallbackDc);
+
+            updates.push({
+                _id: entry.id,
+                system: {
+                    spelldc: {
+                        ...(entry.system?.spelldc ?? {}),
+                        value: nextAttack,
+                        dc: nextDc
+                    }
+                }
+            });
+        }
+
+        if (updates.length > 0) {
+            await actor.updateEmbeddedDocuments("Item", updates);
+        }
+    }
+
     _activateSourceListeners(html, refresh) {
         const source = window.ConstructedCreatureSource;
         const dropZone = html.find("#mm-source-drop-zone");
@@ -590,6 +626,162 @@ class ConstructedCreatureApp extends Application {
             if (globalThis.foundry?.utils?.deepClone) return foundry.utils.deepClone(value);
             return JSON.parse(JSON.stringify(value));
         };
+        const moduleFlagKey = "pf2e-ts-adv-v2";
+        const normalizeToken = (value) => String(value ?? "")
+            .toLowerCase()
+            .replace(/ё/g, "е")
+            .replace(/[^a-zа-я0-9]+/gi, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        const addToken = (set, value) => {
+            const token = normalizeToken(value);
+            if (token) set.add(token);
+        };
+        const markItemOrigin = (itemData, category, details = {}) => {
+            const prepared = cloneData(itemData) ?? itemData;
+            if (!prepared || typeof prepared !== "object") return prepared;
+            prepared.flags = prepared.flags && typeof prepared.flags === "object" ? prepared.flags : {};
+            const moduleFlags = prepared.flags[moduleFlagKey] && typeof prepared.flags[moduleFlagKey] === "object"
+                ? prepared.flags[moduleFlagKey]
+                : {};
+            moduleFlags.constructedOrigin = {
+                ...(moduleFlags.constructedOrigin && typeof moduleFlags.constructedOrigin === "object" ? moduleFlags.constructedOrigin : {}),
+                category,
+                ...details
+            };
+            prepared.flags[moduleFlagKey] = moduleFlags;
+            return prepared;
+        };
+        const markItemsOrigin = (items, category, details = {}) => {
+            if (!Array.isArray(items)) return [];
+            return items.map((itemData) => markItemOrigin(itemData, category, details));
+        };
+        const isAdjustmentItemData = (itemData) => {
+            if (!itemData || typeof itemData !== "object") return false;
+            const name = String(itemData?.name ?? "").toLowerCase();
+            const slug = String(itemData?.system?.slug ?? "").toLowerCase();
+            if (/корректировк|adjustment/.test(name)) return true;
+            if (/корректировк|adjustment/.test(slug)) return true;
+            const traits = itemData?.system?.traits?.value;
+            if (Array.isArray(traits) && traits.some((trait) => /корректировк|adjustment/i.test(String(trait)))) {
+                return true;
+            }
+            return false;
+        };
+        const getSourceImportId = (itemData) => {
+            const sourceId = itemData?.flags?.["pf2e-ts-adv-v2"]?.sourceImport?.sourceItemId;
+            return (typeof sourceId === "string" && sourceId.length > 0) ? sourceId : null;
+        };
+        const getGrantedByIdFromData = (itemData) => {
+            const directId = itemData?.grantedBy?.id
+                ?? itemData?.flags?.pf2e?.grantedBy?.id
+                ?? itemData?.system?.context?.grantedBy?.id
+                ?? null;
+            if (typeof directId === "string" && directId.length > 0) return directId;
+
+            const uuid = itemData?.flags?.pf2e?.grantedBy?.uuid
+                ?? itemData?.system?.context?.grantedBy?.uuid
+                ?? null;
+            if (typeof uuid !== "string" || uuid.length === 0) return null;
+
+            const lastSegment = uuid.split(".").pop();
+            return (typeof lastSegment === "string" && lastSegment.length > 0) ? lastSegment : null;
+        };
+        const selectedTemplateKey = String(html.find("#mm-template-select").val() ?? "none");
+        const selectedClassKey = String(html.find("#mm-class-select").val() ?? "none");
+        const selectedSubclassRaw = html.find("#mm-subclass-select").val();
+        const selectedSubclassKey = String(selectedSubclassRaw ?? "none");
+        const selectedAncestryFamily = String(html.find("#mm-ancestry-family").val() ?? "none");
+
+        const replaceCategories = new Set();
+        if (selectedTemplateKey !== "none") replaceCategories.add("template");
+        if (selectedClassKey !== "none") replaceCategories.add("class");
+        if (selectedSubclassKey !== "none") replaceCategories.add("subclass");
+        if (selectedAncestryFamily !== "none") replaceCategories.add("ancestry");
+
+        const ancestryTokens = new Set();
+        const classTokens = new Set();
+        const subclassTokens = new Set();
+        const templateTokens = new Set();
+        const ancestryTraitTokens = new Set();
+        const classTraitTokens = new Set();
+
+        if (window.ConstructedCreatureAncestry?.DATA) {
+            for (const [key, data] of Object.entries(window.ConstructedCreatureAncestry.DATA)) {
+                addToken(ancestryTokens, key);
+                addToken(ancestryTokens, data?.label);
+                addToken(ancestryTraitTokens, key);
+                if (data?.items && typeof data.items === "object") {
+                    for (const item of Object.values(data.items)) {
+                        addToken(ancestryTokens, item?.name);
+                    }
+                }
+            }
+        }
+        if (window.ConstructedCreatureClass?.TEMPLATES) {
+            for (const [key, data] of Object.entries(window.ConstructedCreatureClass.TEMPLATES)) {
+                addToken(classTokens, key);
+                addToken(classTokens, data?.label);
+                addToken(classTraitTokens, key);
+            }
+        }
+        const subclassCollections = [
+            window.ConstructedCreatureClass?.ROGUE_RACKETS,
+            window.ConstructedCreatureClass?.FIGHTER_STYLES,
+            window.ConstructedCreatureClass?.SORCERER_BLOODLINES
+        ];
+        for (const collection of subclassCollections) {
+            if (!collection || typeof collection !== "object") continue;
+            for (const [key, data] of Object.entries(collection)) {
+                addToken(subclassTokens, key);
+                addToken(subclassTokens, data?.name);
+            }
+        }
+        for (const [key, data] of Object.entries(MONSTER_TEMPLATES)) {
+            addToken(templateTokens, key);
+            addToken(templateTokens, data?.label);
+        }
+
+        const tokenSetContains = (tokenSet, haystack) => {
+            for (const token of tokenSet) {
+                if (!token) continue;
+                if (haystack.includes(token)) return true;
+            }
+            return false;
+        };
+
+        const classifySourceCategory = (itemData) => {
+            const explicitCategory = itemData?.flags?.[moduleFlagKey]?.constructedOrigin?.category;
+            if (["template", "class", "subclass", "ancestry"].includes(explicitCategory)) {
+                return explicitCategory;
+            }
+
+            const type = String(itemData?.type ?? "").toLowerCase();
+            const mayBeAdjustment = ["action", "feat", "effect", "passive", "lore"].includes(type) || isAdjustmentItemData(itemData);
+            if (!mayBeAdjustment) return null;
+
+            const traits = Array.isArray(itemData?.system?.traits?.value)
+                ? itemData.system.traits.value.map((value) => normalizeToken(value))
+                : [];
+            for (const trait of traits) {
+                if (ancestryTraitTokens.has(trait)) return "ancestry";
+            }
+            for (const trait of traits) {
+                if (classTraitTokens.has(trait)) return "class";
+            }
+
+            const haystack = normalizeToken([
+                itemData?.name ?? "",
+                itemData?.system?.slug ?? "",
+                ...(Array.isArray(itemData?.system?.traits?.value) ? itemData.system.traits.value : [])
+            ].join(" "));
+
+            if (tokenSetContains(ancestryTokens, haystack)) return "ancestry";
+            if (tokenSetContains(subclassTokens, haystack)) return "subclass";
+            if (tokenSetContains(classTokens, haystack)) return "class";
+            if (tokenSetContains(templateTokens, haystack)) return "template";
+            return null;
+        };
         const sourceActorData = sourceActor ? sourceActor.toObject() : null;
         const sourceSpeed = sourceActorData ? cloneData(sourceActorData.system?.attributes?.speed) : null;
         const sourceSenses = sourceActorData ? cloneData(sourceActorData.system?.perception?.senses) : null;
@@ -633,7 +825,12 @@ class ConstructedCreatureApp extends Application {
             if (ancUuid) {
                 const ancData = await window.ConstructedCreatureAncestry.getParsedData(ancUuid);
                 ancestryTraits = ancData.traits || [];
-                if (ancData.items && ancData.items.length) itemsToCreate.push(...ancData.items);
+                if (ancData.items && ancData.items.length) {
+                    itemsToCreate.push(...markItemsOrigin(ancData.items, "ancestry", {
+                        family: selectedAncestryFamily,
+                        uuid: ancUuid
+                    }));
+                }
             }
         }
 
@@ -728,7 +925,7 @@ class ConstructedCreatureApp extends Application {
             if (sBonus && sDmg) itemsToCreate.push({ name: "Удар", type: "melee", system: { bonus: { value: sBonus }, damageRolls: { "0": { damage: sDmg, damageType: "bludgeoning" } }, weaponType: { value: "melee" } } });
 
             const spellDC = getVal("spellcasting", "spellcasting");
-            if (spellDC) itemsToCreate.push({ name: "Заклинания", type: "spellcastingEntry", system: { spelldc: { value: spellDC, dc: spellDC + 10 }, tradition: "arcane", prepared: { value: "innate" }, showUnpreparedSpells: { value: true } } });
+            if (spellDC) itemsToCreate.push({ name: "Заклинания", type: "spellcastingEntry", system: { spelldc: { value: spellDC, dc: spellDC + 8 }, tradition: "arcane", prepared: { value: "innate" }, showUnpreparedSpells: { value: true } } });
         }
 
         // 6. ПОДКЛАССЫ
@@ -741,7 +938,12 @@ class ConstructedCreatureApp extends Application {
                     const filteredSubclassItems = preferSourceEquipment
                         ? (sourceModule?.filterOutPhysicalItems?.(subData.items) ?? subData.items)
                         : subData.items;
-                    if (filteredSubclassItems.length > 0) itemsToCreate.push(...filteredSubclassItems);
+                    if (filteredSubclassItems.length > 0) {
+                        itemsToCreate.push(...markItemsOrigin(filteredSubclassItems, "subclass", {
+                            classKey: clsName,
+                            subclassKey: subKey
+                        }));
+                    }
                 }
             }
         }
@@ -759,6 +961,42 @@ class ConstructedCreatureApp extends Application {
         if (window.ConstructedCreatureOther) {
             const otherItems = await window.ConstructedCreatureOther.getSelectedItems(html);
             if (otherItems.length > 0) itemsToCreate.push(...otherItems);
+        }
+
+        if (sourceItemsToCreate.length > 0 && replaceCategories.size > 0) {
+            const sourceById = new Map();
+            for (const itemData of sourceItemsToCreate) {
+                const sourceId = getSourceImportId(itemData);
+                if (sourceId) sourceById.set(sourceId, itemData);
+            }
+
+            const removedSourceIds = new Set();
+            for (const itemData of sourceItemsToCreate) {
+                const category = classifySourceCategory(itemData);
+                if (!category || !replaceCategories.has(category)) continue;
+                const sourceId = getSourceImportId(itemData);
+                if (sourceId) removedSourceIds.add(sourceId);
+            }
+
+            let changed = true;
+            while (changed) {
+                changed = false;
+                for (const [sourceId, itemData] of sourceById.entries()) {
+                    if (removedSourceIds.has(sourceId)) continue;
+                    const grantedById = getGrantedByIdFromData(itemData);
+                    if (grantedById && removedSourceIds.has(grantedById)) {
+                        removedSourceIds.add(sourceId);
+                        changed = true;
+                    }
+                }
+            }
+
+            if (removedSourceIds.size > 0) {
+                sourceItemsToCreate = sourceItemsToCreate.filter((itemData) => {
+                    const sourceId = getSourceImportId(itemData);
+                    return !sourceId || !removedSourceIds.has(sourceId);
+                });
+            }
         }
 
         if (itemsToCreate.length > 0) {
@@ -883,7 +1121,11 @@ class ConstructedCreatureApp extends Application {
         const normalizedStrikeBonus = getVal("strikeBonus", "strikeBonus")
             ?? MONSTER_STATS["strikeBonus"]?.[level]?.moderate
             ?? null;
+        const normalizedSpellAttack = getVal("spellcasting", "spellcasting")
+            ?? MONSTER_STATS["spellcasting"]?.[level]?.moderate
+            ?? null;
         await this._normalizeDefaultFistAttack(actor, normalizedStrikeBonus);
+        await this._normalizeSpellcastingEntries(actor, normalizedSpellAttack);
 
         this.close();
         actor.sheet.render(true);
