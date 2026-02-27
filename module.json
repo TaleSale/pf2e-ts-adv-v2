@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "2.1.4",
+  "version": "2.1.6",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -21,6 +21,7 @@
     "thumb.js",
     "convert-to-action.js",
     "scripts/spell-at-will.js",
+    "scripts/scene-eye.js",
     "scripts/monster-dc.js",
     "scripts/monster-damage.js",
     "scripts/monster-attack.js",
