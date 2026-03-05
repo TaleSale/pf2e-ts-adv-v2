@@ -11,7 +11,7 @@ const isPlainObject = (value) =>
 
 const cleanQuery = (value) => {
     const text = String(value ?? "").toLocaleLowerCase(game.i18n.lang).trim();
-    const searchFilter = foundry?.applications?.ux?.SearchFilter;
+    const searchFilter = foundry?.applications?.ux?.SearchFilter ?? globalThis.fa?.ux?.SearchFilter;
     return searchFilter?.cleanQuery ? searchFilter.cleanQuery(text) : text;
 };
 
@@ -28,10 +28,16 @@ const matchesPrerequisites = (entryPrereqs, queryText) => {
 const ensurePrereqFilterData = (tab) => {
     if (!tab?.filterData) return;
     if (!tab.filterData.prerequisites) {
-        tab.filterData.prerequisites = { text: "" };
+        tab.filterData = {
+            ...tab.filterData,
+            prerequisites: { text: "" },
+        };
     }
     if (tab.defaultFilterData && !tab.defaultFilterData.prerequisites) {
-        tab.defaultFilterData.prerequisites = { text: "" };
+        tab.defaultFilterData = {
+            ...tab.defaultFilterData,
+            prerequisites: { text: "" },
+        };
     }
 };
 
@@ -122,6 +128,22 @@ const ensurePrereqInput = (browser) => {
     syncPrereqInput(browser);
 };
 
+const registerWrapper = (target, fn, type) => {
+    if (typeof libWrapper?.register !== "function") return false;
+    const targetFn = foundry?.utils?.getProperty?.(globalThis, target);
+    if (typeof targetFn !== "function") {
+        console.warn(`${MODULE_ID} | Skipping wrapper for missing target: ${target}`);
+        return false;
+    }
+    try {
+        libWrapper.register(MODULE_ID, target, fn, type);
+        return true;
+    } catch (error) {
+        console.warn(`${MODULE_ID} | Failed to register wrapper: ${target}`, error);
+        return false;
+    }
+};
+
 const registerWrappers = (browser) => {
     if (!browser?.tabs?.feat) return;
     if (!isFilterEnabled()) {
@@ -133,21 +155,22 @@ const registerWrappers = (browser) => {
     const BROWSER_PATH = "game.pf2e.compendiumBrowser";
     ensurePrereqFilterData(browser.tabs?.feat);
 
-    libWrapper.register(
-        MODULE_ID,
+    registerWrapper(
         `${FEAT_TAB_PATH}.prepareFilterData`,
         function (wrapped, ...args) {
             const data = wrapped(...args);
             if (!data.prerequisites) {
-                data.prerequisites = { text: "" };
+                return {
+                    ...data,
+                    prerequisites: { text: "" },
+                };
             }
             return data;
         },
         "WRAPPER",
     );
 
-    libWrapper.register(
-        MODULE_ID,
+    registerWrapper(
         `${FEAT_TAB_PATH}.loadData`,
         async function () {
             console.debug(`${MODULE_ID} | Compendium Browser | Started loading feats with prerequisites`);
@@ -226,18 +249,37 @@ const registerWrappers = (browser) => {
                     const sourceSlug = foundry.utils.slugify?.(pubSource) ?? pubSource.toLowerCase();
                     if (pubSource) publications.add(pubSource);
 
+                    const traitValues = Array.isArray(featData.system?.traits?.value)
+                        ? featData.system.traits.value
+                        : [];
+                    const traits = traitValues.map((trait) => trait.replace(/^hb_/, ""));
+                    const rarity = featData.system?.traits?.rarity ?? "common";
+                    const options = [
+                        ...traits.map((trait) => `trait:${trait}`),
+                        ...[...skills].map((skill) => `skill:${skill}`),
+                        `category:${featData.system.category}`,
+                        `type:${featData.type}`,
+                        `level:${featData.system.level.value}`,
+                        `rarity:${rarity}`,
+                        `source:${sourceSlug || "none"}`,
+                    ];
+                    if (
+                        featData.system.category === "ancestry" &&
+                        !traits.some((trait) =>
+                            Object.prototype.hasOwnProperty.call(CONFIG.PF2E.creatureTraits ?? {}, trait),
+                        )
+                    ) {
+                        options.push("trait:ancestry:universal");
+                    }
+
                     feats.push({
-                        type: featData.type,
                         name: featData.name,
                         originalName: featData.originalName,
                         img: featData.img,
                         uuid: featData.uuid,
                         level: featData.system.level.value,
-                        category: featData.system.category,
-                        skills: [...skills],
-                        traits: featData.system.traits.value.map((trait) => trait.replace(/^hb_/, "")),
-                        rarity: featData.system.traits.rarity,
-                        source: sourceSlug,
+                        rarity,
+                        options: new Set(options),
                         prerequisites: prereqSearchText,
                     });
                 }
@@ -256,20 +298,18 @@ const registerWrappers = (browser) => {
         "OVERRIDE",
     );
 
-    libWrapper.register(
-        MODULE_ID,
-        `${FEAT_TAB_PATH}.filterIndexData`,
-        function (wrapped, entry) {
-            if (!wrapped(entry)) return false;
+    registerWrapper(
+        `${FEAT_TAB_PATH}.sortResult`,
+        function (wrapped, result) {
+            const sorted = wrapped(result);
             const query = this.filterData?.prerequisites?.text ?? "";
-            if (!query) return true;
-            return matchesPrerequisites(entry?.prerequisites ?? "", query);
+            if (!query) return sorted;
+            return sorted.filter((entry) => matchesPrerequisites(entry?.prerequisites ?? "", query));
         },
         "WRAPPER",
     );
 
-    libWrapper.register(
-        MODULE_ID,
+    registerWrapper(
         `${FEAT_TAB_PATH}.resetFilters`,
         function (wrapped, ...args) {
             wrapped(...args);
@@ -282,8 +322,7 @@ const registerWrappers = (browser) => {
         ? browser.dataTabsList
         : Object.keys(browser.tabs ?? {});
     for (const tabName of tabNames) {
-        libWrapper.register(
-            MODULE_ID,
+        registerWrapper(
             `game.pf2e.compendiumBrowser.tabs.${tabName}.init`,
             async function (wrapped, ...args) {
                 const result = await wrapped(...args);
@@ -295,8 +334,7 @@ const registerWrappers = (browser) => {
         );
     }
 
-    libWrapper.register(
-        MODULE_ID,
+    registerWrapper(
         `${BROWSER_PATH}.openTab`,
         async function (wrapped, ...args) {
             const result = await wrapped(...args);
@@ -308,8 +346,7 @@ const registerWrappers = (browser) => {
         "WRAPPER",
     );
 
-    libWrapper.register(
-        MODULE_ID,
+    registerWrapper(
         `${BROWSER_PATH}._onClose`,
         function (wrapped, ...args) {
             wrapped(...args);
@@ -325,8 +362,7 @@ const registerWrappers = (browser) => {
         "WRAPPER",
     );
 
-    libWrapper.register(
-        MODULE_ID,
+    registerWrapper(
         `${BROWSER_PATH}._onRender`,
         function (wrapped, ...args) {
             const result = wrapped(...args);

@@ -1,7 +1,7 @@
 {
   "id": "pf2e-ts-adv-v2",
   "title": "PF2E-TS-ADV-V2",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -15,7 +15,6 @@
     }
   ],
   "scripts": [
-    "linked-initiative.js",
     "autoformat.js",
     "read.js",
     "thumb.js",

@@ -84,6 +84,12 @@ class TSButton {
         { pattern: /Знан[а-я]*: Обществ[а-я]*_Искател[а-я]*_КС(\d+)/gi, replacement: '@Check[type:pathfinder-society-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Кинтарг[а-я]*_КС(\d+)/gi, replacement: '@Check[type:kintargo-lore|dc:$1]' },
         { pattern: /Знан[а-я]*: Дьявол[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Толп[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Слух[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Крысолюд[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Закон[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
+        { pattern: /Знан[а-я]*: Шпионаж[а-я]*_КС(\d+)/gi, replacement: '@Check[type:devil-lore|dc:$1]' },
+
         { pattern: /КС_(\d+)/gi, replacement: 'КС$1' },
 
 
