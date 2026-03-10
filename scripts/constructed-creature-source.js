@@ -840,6 +840,104 @@ window.ConstructedCreatureSource = {
         return this.convertCheckTagsToVariants(text, sourceLevel);
     },
 
+    deepCloneValue: function(value) {
+        if (value === null || value === undefined) return value;
+        if (globalThis.foundry?.utils?.deepClone) return foundry.utils.deepClone(value);
+        return JSON.parse(JSON.stringify(value));
+    },
+
+    getResistanceWeaknessRow: function(level) {
+        return window.CC_MONSTER_STATS?.resistanceWeakness?.[String(level)] ?? null;
+    },
+
+    scaleResistanceWeaknessValue: function(value, sourceLevel, targetLevel) {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) return value;
+
+        const sourceRow = this.getResistanceWeaknessRow(sourceLevel);
+        const targetRow = this.getResistanceWeaknessRow(targetLevel);
+        if (!sourceRow || !targetRow) return Math.max(0, Math.trunc(numeric));
+
+        const srcLow = Number(sourceRow.low);
+        const srcHigh = Number(sourceRow.high);
+        const tgtLow = Number(targetRow.low);
+        const tgtHigh = Number(targetRow.high);
+        if (!Number.isFinite(srcLow) || !Number.isFinite(srcHigh) || !Number.isFinite(tgtLow) || !Number.isFinite(tgtHigh)) {
+            return Math.max(0, Math.trunc(numeric));
+        }
+
+        let scaled = numeric;
+
+        if (srcHigh <= srcLow) {
+            scaled = tgtLow + (numeric - srcLow);
+        } else if (numeric > srcHigh) {
+            // Preserve overshoot above "high".
+            scaled = tgtHigh + (numeric - srcHigh);
+        } else if (numeric >= srcLow) {
+            // Preserve relative position inside low..high band.
+            const sourceRange = srcHigh - srcLow;
+            const targetRange = tgtHigh - tgtLow;
+            const ratio = (numeric - srcLow) / sourceRange;
+            scaled = tgtLow + ratio * targetRange;
+        } else {
+            // Preserve how far below "low" the source value is.
+            scaled = tgtLow + (numeric - srcLow);
+        }
+
+        if (!Number.isFinite(scaled)) return Math.max(0, Math.trunc(numeric));
+        return Math.max(0, Math.round(scaled));
+    },
+
+    scaleResistanceWeaknessEntries: function(entries, sourceLevel, targetLevel) {
+        const cloned = Array.isArray(entries) ? this.deepCloneValue(entries) : [];
+        if (!Array.isArray(cloned)) return [];
+
+        for (const entry of cloned) {
+            if (!entry || typeof entry !== "object") continue;
+
+            const rawValue = entry.value;
+            const parsedValue = this.parseDcNumber(rawValue);
+            if (!Number.isFinite(parsedValue)) continue;
+
+            const scaledValue = this.scaleResistanceWeaknessValue(parsedValue, sourceLevel, targetLevel);
+            if (!Number.isFinite(scaledValue)) continue;
+
+            if (typeof rawValue === "number") {
+                entry.value = scaledValue;
+            } else if (typeof rawValue === "string") {
+                entry.value = rawValue.replace(/-?\d+/, String(scaledValue));
+            } else {
+                entry.value = scaledValue;
+            }
+        }
+
+        return cloned;
+    },
+
+    prepareSourceDefenses: function(sourceActorOrData, targetLevel) {
+        const sourceData = sourceActorOrData?.toObject ? sourceActorOrData.toObject() : sourceActorOrData;
+        const sourceAttributes = sourceData?.system?.attributes;
+        if (!sourceAttributes || typeof sourceAttributes !== "object") return null;
+
+        const sourceLevel = Number(sourceData?.system?.details?.level?.value ?? sourceActorOrData?.system?.details?.level?.value ?? NaN);
+        const numericTargetLevel = Number(targetLevel);
+        const canScale = Number.isFinite(sourceLevel) && Number.isFinite(numericTargetLevel);
+
+        const immunities = this.deepCloneValue(sourceAttributes.immunities ?? []);
+        const weaknesses = canScale
+            ? this.scaleResistanceWeaknessEntries(sourceAttributes.weaknesses, sourceLevel, numericTargetLevel)
+            : this.deepCloneValue(sourceAttributes.weaknesses ?? []);
+        const resistances = canScale
+            ? this.scaleResistanceWeaknessEntries(sourceAttributes.resistances, sourceLevel, numericTargetLevel)
+            : this.deepCloneValue(sourceAttributes.resistances ?? []);
+
+        return {
+            immunities: Array.isArray(immunities) ? immunities : [],
+            weaknesses: Array.isArray(weaknesses) ? weaknesses : [],
+            resistances: Array.isArray(resistances) ? resistances : []
+        };
+    },
+
     prepareSourceItems: function(actor, targetLevel, options = {}) {
         this.conversionLog = [];
         const items = [];

@@ -789,13 +789,43 @@ class ConstructedCreatureApp extends Application {
         const sourceTraitsLanguages = sourceActorData ? cloneData(sourceActorData.system?.traits?.languages) : null;
         const sourceTraitsValue = sourceActorData ? cloneData(sourceActorData.system?.traits?.value) : null;
         const sourceTraitsRarity = sourceActorData ? cloneData(sourceActorData.system?.traits?.rarity) : null;
+        const sourceDefenses = sourceActor
+            ? (sourceModule?.prepareSourceDefenses
+                ? sourceModule.prepareSourceDefenses(sourceActorData ?? sourceActor, Number(level))
+                : {
+                    immunities: cloneData(sourceActorData?.system?.attributes?.immunities ?? []),
+                    weaknesses: cloneData(sourceActorData?.system?.attributes?.weaknesses ?? []),
+                    resistances: cloneData(sourceActorData?.system?.attributes?.resistances ?? [])
+                })
+            : null;
+        const sourceImmunities = sourceDefenses?.immunities ?? null;
+        const sourceWeaknesses = sourceDefenses?.weaknesses ?? null;
+        const sourceResistances = sourceDefenses?.resistances ?? null;
         const sourceAvatar = sourceActorData?.img ?? sourceActor?.img ?? null;
+        const sourcePrototypeToken = sourceActorData?.prototypeToken
+            ? cloneData(sourceActorData.prototypeToken)
+            : (sourceActor?.prototypeToken ? cloneData(sourceActor.prototypeToken) : null);
         const sourceTokenAvatar = sourceActorData?.prototypeToken?.texture?.src
             ?? sourceActor?.prototypeToken?.texture?.src
             ?? sourceActorData?.prototypeToken?.img
             ?? sourceActor?.prototypeToken?.img
             ?? sourceAvatar
             ?? null;
+        const preparedPrototypeToken = (keepSourceAvatar && sourcePrototypeToken && typeof sourcePrototypeToken === "object")
+            ? (() => {
+                const tokenData = cloneData(sourcePrototypeToken);
+                delete tokenData._id;
+                delete tokenData.actorId;
+                tokenData.name = name;
+                if (typeof tokenData.texture !== "object" || tokenData.texture === null) {
+                    tokenData.texture = {};
+                }
+                if (!tokenData.texture.src && sourceTokenAvatar) {
+                    tokenData.texture.src = sourceTokenAvatar;
+                }
+                return tokenData;
+            })()
+            : null;
 
         const finalStats = {};
         html.find(".stat-select.tpl-stat").each(function () { finalStats[this.name] = $(this).val(); });
@@ -845,7 +875,11 @@ class ConstructedCreatureApp extends Application {
         const actorData = {
             name: name, type: "npc",
             ...(keepSourceAvatar && sourceAvatar ? { img: sourceAvatar } : {}),
-            ...(keepSourceAvatar && sourceTokenAvatar ? { prototypeToken: { texture: { src: sourceTokenAvatar } } } : {}),
+            ...(keepSourceAvatar
+                ? (preparedPrototypeToken
+                    ? { prototypeToken: preparedPrototypeToken }
+                    : (sourceTokenAvatar ? { prototypeToken: { texture: { src: sourceTokenAvatar } } } : {}))
+                : {}),
             system: {
                 details: {
                     level: { value: parseInt(level) },
@@ -853,7 +887,14 @@ class ConstructedCreatureApp extends Application {
                     ...(sourceDetailsLanguages ? { languages: sourceDetailsLanguages } : {})
                 },
                 abilities: { str: { mod: strMod }, dex: { mod: dexMod }, con: { mod: conMod }, int: { mod: intMod }, wis: { mod: wisMod }, cha: { mod: chaMod } },
-                attributes: { hp: { value: hpMax, max: hpMax }, ac: { value: acVal }, speed: (keepSourceSpeedTypes && sourceSpeed) ? sourceSpeed : { value: 25 } },
+                attributes: {
+                    hp: { value: hpMax, max: hpMax },
+                    ac: { value: acVal },
+                    speed: (keepSourceSpeedTypes && sourceSpeed) ? sourceSpeed : { value: 25 },
+                    ...(Array.isArray(sourceImmunities) ? { immunities: sourceImmunities } : {}),
+                    ...(Array.isArray(sourceWeaknesses) ? { weaknesses: sourceWeaknesses } : {}),
+                    ...(Array.isArray(sourceResistances) ? { resistances: sourceResistances } : {})
+                },
                 saves: { fortitude: { value: fortVal }, reflex: { value: refVal }, will: { value: willVal } },
                 perception: { mod: perVal, senses: sourceSenses ?? [] },
                 skills: {},
